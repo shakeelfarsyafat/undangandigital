@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-jawa-dark: #1E100A;
+    --bg-jawa-dark-alt: #2A160E;
+    --bg-jawa-ivory: #FAF5EB;
+    --bg-jawa-cream: #F3ECDC;
+    --color-jawa-gold: #D4AF37;
+    --color-jawa-gold-light: #F3E5AB;
+    --color-jawa-gold-dark: #8B6508;
+    --color-jawa-dark-text: #2C1A1D;
+    --color-jawa-brown: #5C3A21;
+    --color-jawa-dark-brown: #3E2211;
+  }
+
+  body {
+    background-color: var(--bg-jawa-ivory);
+    color: #3E2211;
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-serif {
+    font-family: var(--font-serif), Georgia, serif;
+  }
+
+  .font-script {
+    font-family: var(--font-script), 'Great Vibes', cursive;
+  }
+}
+
+/* Gold Dot Pattern Background matching Screenshot 1 */
+.bg-gold-dots {
+  background-color: #FAF5EB;
+  background-image: radial-gradient(#C5A059 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.bg-jawa-bg {
+  background-color: #FAF5EB;
+}
+
+/* Javanese Parchment Vintage Card */
+.glass-card-parchment {
+  background: rgba(250, 245, 235, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(197, 160, 89, 0.45);
+  box-shadow: 0 16px 40px -10px rgba(62, 34, 17, 0.15);
+}
+
+.glass-card-jawa-dark {
+  background: rgba(30, 16, 10, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.45);
+}
+
+/* Golden Glow Effect for Gunungan */
+.gunungan-glow {
+  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.65));
+}
+
+.gunungan-glow-large {
+  filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.8));
+}
+
+/* Gold Button Javanese */
+.btn-jawa-gold {
+  background: linear-gradient(135deg, #C5A059 0%, #8B6508 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 6px 20px 0 rgba(197, 160, 89, 0.45);
+  transition: all 0.3s ease;
+  border: 1px solid #F3E5AB;
+}
+
+.btn-jawa-gold:hover {
+  background: linear-gradient(135deg, #F3E5AB 0%, #C5A059 100%);
+  color: #3E2211;
+  box-shadow: 0 8px 25px 0 rgba(197, 160, 89, 0.65);
+  transform: translateY(-2px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF5EB;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 3px;
+}

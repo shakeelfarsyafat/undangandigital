@@ -1,0 +1,165 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { CreditCard, Copy, Gift, MapPin, Check } from "lucide-react";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import { GununganHeader, JavaneseDivider, JavaneseCorner } from "./JavaneseOrnaments";
+
+interface BankAccount {
+  id: string;
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+}
+
+interface GiftProps {
+  banks: BankAccount[];
+  recipient?: string | null;
+  phone?: string | null;
+  address?: string | null;
+}
+
+export function WeddingGift({ banks, recipient, phone, address }: GiftProps) {
+  const [copiedBankId, setCopiedBankId] = useState<string | null>(null);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedBankId(id);
+    toast.success("Nomor rekening berhasil disalin!");
+    setTimeout(() => setCopiedBankId(null), 2500);
+  };
+
+  const copyAddressToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedAddress(true);
+    toast.success("Alamat pengiriman hadiah berhasil disalin!");
+    setTimeout(() => setCopiedAddress(false), 2500);
+  };
+
+  return (
+    <section className="py-20 px-6 bg-[#FDFBF7] text-center bg-batik-pattern">
+      <div className="max-w-xl mx-auto space-y-12">
+        {/* Wedding Gift Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="space-y-3"
+        >
+          <GununganHeader className="w-16 h-24" />
+          <p className="text-[11px] uppercase tracking-[0.35em] text-[#8B6508] font-semibold">
+            Tandha Katresnan
+          </p>
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#1E100A] font-bold">
+            Wedding Gift
+          </h2>
+          <p className="text-xs text-[#4A2B18] leading-relaxed max-w-md mx-auto font-light">
+            Donga pangestu panjenengan minangka nugraha ingkang wigati sanget kagem kula panjenengan. Menawi bade maringi kado tanda katresnan saget lumantar:
+          </p>
+          <JavaneseDivider className="w-48 h-8" />
+        </motion.div>
+
+        {/* Bank Account Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {banks.map((bank, idx) => (
+            <motion.div
+              key={bank.id || idx}
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: idx * 0.15 }}
+              viewport={{ once: true }}
+              className="glass-card-jawa p-6 rounded-3xl space-y-4 shadow-xl border border-[#D4AF37]/30 flex flex-col justify-between relative overflow-hidden text-left"
+            >
+              <JavaneseCorner position="top-left" />
+              <JavaneseCorner position="top-right" />
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-serif text-xl font-bold text-[#D4AF37]">
+                    {bank.bankName}
+                  </span>
+                  <CreditCard className="w-5 h-5 text-[#8B6508]" />
+                </div>
+                <div className="pt-2">
+                  <p className="font-mono text-lg font-bold text-[#1E100A] tracking-wider">
+                    {bank.accountNumber}
+                  </p>
+                  <p className="text-xs text-[#4A2B18] font-light">
+                    a.n. <span className="font-semibold text-[#1E100A]">{bank.accountHolder}</span>
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => copyToClipboard(bank.accountNumber, bank.id)}
+                className="w-full btn-jawa-gold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+              >
+                {copiedBankId === bank.id ? (
+                  <>
+                    <Check className="w-4 h-4 text-[#1E100A]" />
+                    Berhasil Disalin
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    Salin Nomor Rekening
+                  </>
+                )}
+              </button>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Kirim Hadiah Fisik Card */}
+        {address && (
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="glass-card-jawa p-6 sm:p-8 rounded-3xl space-y-4 shadow-xl border border-[#D4AF37]/30 text-left relative overflow-hidden"
+          >
+            <JavaneseCorner position="top-left" />
+            <JavaneseCorner position="top-right" />
+
+            <div className="flex items-center gap-2 text-[#D4AF37]">
+              <MapPin className="w-5 h-5" />
+              <h3 className="font-serif text-xl font-bold text-[#1E100A]">
+                Kirim Hadiah Fisik
+              </h3>
+            </div>
+
+            <div className="space-y-1 text-xs text-[#4A2B18]">
+              <p>Penerima: <span className="font-semibold text-[#1E100A]">{recipient || "Ahmad & Nabila"}</span></p>
+              {phone && <p>Telepon: <span className="font-medium text-[#1E100A]">{phone}</span></p>}
+              <p className="pt-1">Alamat Pengiriman:</p>
+              <p className="p-3 bg-[#FDFBF7] rounded-xl border border-[#D4AF37]/40 text-[#1E100A] font-medium leading-relaxed">
+                {address}
+              </p>
+            </div>
+
+            <button
+              onClick={() => copyAddressToClipboard(`${recipient ? recipient + " - " : ""}${address}`)}
+              className="w-full btn-jawa-gold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+            >
+              {copiedAddress ? (
+                <>
+                  <Check className="w-4 h-4 text-[#1E100A]" />
+                  Alamat Berhasil Disalin
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  Salin Alamat Hadiah
+                </>
+              )}
+            </button>
+          </motion.div>
+        )}
+      </div>
+    </section>
+  );
+}
