@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { notFound } from "next/navigation";
 import { LoadingScreen } from "@/components/invitation/LoadingScreen";
 import { Cover } from "@/components/invitation/Cover";
