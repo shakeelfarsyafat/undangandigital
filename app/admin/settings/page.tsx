@@ -198,25 +198,47 @@ export default function AdminSettingsPage() {
   };
 
   const handleFileUpload = async (file: File, type: "image" | "music" = "image"): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", type);
     try {
-      const res = await fetch("/api/admin/upload", {
+      const isMusic = type === "music";
+      const folder = isMusic ? "wedding/music" : "wedding/photos";
+      const resourceType = isMusic ? "video" : "image";
+
+      // 1. Dapatkan signature dari server
+      const signRes = await fetch("/api/admin/upload/sign", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder, resource_type: resourceType }),
       });
-      const json = await res.json();
-      if (res.ok) {
-        return json.url;
-      } else {
-        toast.error(json.error || "Gagal mengunggah file");
+      const signData = await signRes.json();
+      if (!signRes.ok) throw new Error(signData.error || "Gagal mendapatkan signature");
+
+      // 2. Upload langsung ke Cloudinary dari browser (bypass server — no size limit)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", signData.api_key);
+      formData.append("timestamp", String(signData.timestamp));
+      formData.append("signature", signData.signature);
+      formData.append("folder", signData.folder);
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${signData.cloud_name}/${resourceType}/upload`,
+        { method: "POST", body: formData }
+      );
+      const uploadData = await uploadRes.json();
+
+      if (!uploadRes.ok) {
+        const errMsg = uploadData?.error?.message || "Upload ke Cloudinary gagal";
+        throw new Error(errMsg);
       }
-    } catch {
-      toast.error("Terjadi kesalahan saat mengunggah");
+
+      return uploadData.secure_url as string;
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Terjadi kesalahan saat mengunggah";
+      toast.error(errMsg);
+      return null;
     }
-    return null;
   };
+
 
   const handleAddGalleryItem = () => {
     setGalleryItems([
