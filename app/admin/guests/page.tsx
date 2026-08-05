@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Users,
@@ -50,7 +50,7 @@ interface RSVPItem {
   createdAt: string | Date;
 }
 
-export default function AdminGuestsPage() {
+function AdminGuestsContent() {
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as "guests" | "rsvp") || "guests";
   const [activeMainTab, setActiveMainTab] = useState<"guests" | "rsvp">(initialTab === "rsvp" ? "rsvp" : "guests");
@@ -828,5 +828,13 @@ export default function AdminGuestsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminGuestsPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center text-xs text-[#5C4649]">Memuat halaman tamu...</div>}>
+      <AdminGuestsContent />
+    </Suspense>
   );
 }
