@@ -39,8 +39,17 @@ export function removeMockUser(id: string) {
 }
 
 export async function GET() {
+  let dbUsers: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    weddingSlug: string | null;
+    createdAt: Date;
+  }> = [];
+
   try {
-    const userList = await db
+    dbUsers = await db
       .select({
         id: schema.users.id,
         name: schema.users.name,
@@ -51,21 +60,15 @@ export async function GET() {
       })
       .from(schema.users)
       .orderBy(desc(schema.users.createdAt));
-
-    return NextResponse.json({ users: userList });
   } catch {
-    // Fallback ke in-memory
-    return NextResponse.json({
-      users: mockUsers.map((u) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        role: u.role,
-        weddingSlug: u.weddingSlug,
-        createdAt: u.createdAt,
-      })),
-    });
+    // ignore DB errors and rely on mockUsers below
   }
+
+  const existingEmails = new Set(dbUsers.map((u) => u.email.toLowerCase()));
+  const extraMock = mockUsers.filter((m) => !existingEmails.has(m.email.toLowerCase()));
+
+  const combined = [...dbUsers, ...extraMock];
+  return NextResponse.json({ users: combined });
 }
 
 export async function POST(request: Request) {
@@ -102,7 +105,15 @@ export async function POST(request: Request) {
         success: true,
         user: inserted[0],
       });
-    } catch {
+    } catch (err: unknown) {
+      const errString = String(err);
+      if (errString.includes("unique") || errString.includes("duplicate") || errString.includes("users_email_unique")) {
+        return NextResponse.json(
+          { error: "Email tersebut sudah terdaftar. Silakan gunakan nama/email lain." },
+          { status: 400 }
+        );
+      }
+
       // In-memory fallback if DB unavailable
       const newUser = {
         id: `usr-${Date.now()}`,
