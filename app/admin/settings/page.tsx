@@ -197,20 +197,23 @@ export default function AdminSettingsPage() {
     setBanks(updated);
   };
 
-  const handleFileUpload = async (file: File): Promise<string | null> => {
+  const handleFileUpload = async (file: File, type: "image" | "music" = "image"): Promise<string | null> => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("type", type);
     try {
       const res = await fetch("/api/admin/upload", {
         method: "POST",
         body: formData,
       });
+      const json = await res.json();
       if (res.ok) {
-        const json = await res.json();
         return json.url;
+      } else {
+        toast.error(json.error || "Gagal mengunggah file");
       }
     } catch {
-      // fallback
+      toast.error("Terjadi kesalahan saat mengunggah");
     }
     return null;
   };
@@ -1043,7 +1046,7 @@ export default function AdminSettingsPage() {
                         const file = e.target.files?.[0];
                         if (file) {
                           setUploadingMusic(true);
-                          const url = await handleFileUpload(file);
+                          const url = await handleFileUpload(file, "music");
                           if (url) {
                             setMusicUrl(url);
                             toast.success("File musik berhasil diunggah!");
