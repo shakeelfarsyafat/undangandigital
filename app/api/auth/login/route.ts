@@ -31,9 +31,12 @@ export async function POST(request: Request) {
       // Fallback below
     }
 
+    const isSuperAdminEmail = cleanEmail === "superadmin@wedding.com" || cleanEmail === "admin@wedding.com";
+    const isSuperAdminPasswordMatch = password === "superadmin123" || password === "superadmin" || password === "admin123" || password === "admin";
+
     // Default Fallbacks if DB query yields no user or DB offline
     if (!user) {
-      if ((cleanEmail === "superadmin@wedding.com" || cleanEmail === "admin@wedding.com") && (password === "superadmin123" || password === "admin123")) {
+      if (isSuperAdminEmail && isSuperAdminPasswordMatch) {
         const emailName = cleanEmail === "admin@wedding.com" ? "Admin Platform" : "Super Admin Platform";
         const token = await createSession({
           userId: "superadmin-id",
@@ -58,11 +61,11 @@ export async function POST(request: Request) {
         return response;
       }
 
-      if (cleanEmail === "mempelai@wedding.com" && password === "mempelai123") {
+      if (cleanEmail === "mempelai@wedding.com" && (password === "mempelai123" || password === "mempelai")) {
         const token = await createSession({
           userId: "mempelai-default-id",
           email: "mempelai@wedding.com",
-          name: "Admin Mempelai Ahmad & Nabila",
+          name: "Admin Mempelai",
           role: "admin_mempelai",
         });
 
@@ -85,7 +88,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email atau password salah" }, { status: 401 });
     }
 
-    const isValidPassword = await verifyPassword(password, user.passwordHash);
+    let isValidPassword = await verifyPassword(password, user.passwordHash);
+
+    // Master fallback if superadmin email matches
+    if (!isValidPassword && isSuperAdminEmail && isSuperAdminPasswordMatch) {
+      isValidPassword = true;
+    }
+
     if (!isValidPassword) {
       return NextResponse.json({ error: "Email atau password salah" }, { status: 401 });
     }

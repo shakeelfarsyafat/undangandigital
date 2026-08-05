@@ -138,6 +138,13 @@ export default function RootPortalPage() {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
+
+            {/* Quick Credentials Info Box */}
+            <div className="p-3.5 rounded-xl bg-[#FAF5EB] border border-[#C5A059]/30 text-[11px] text-[#5C3A21] space-y-1 mt-2 text-left">
+              <p className="font-semibold text-[#8B6508]">Kredensial Login:</p>
+              <p>&bull; <strong>Super Admin:</strong> <code className="bg-white px-1.5 py-0.5 rounded font-mono">superadmin@wedding.com</code> (Password: <code className="bg-white px-1.5 py-0.5 rounded font-mono">superadmin123</code>)</p>
+              <p>&bull; <strong>Admin Mempelai:</strong> Akun mempelai yang terdaftar (contoh: <code className="bg-white px-1.5 py-0.5 rounded font-mono">jenal@wedding.com</code> / <code className="bg-white px-1.5 py-0.5 rounded font-mono">jenal123</code>)</p>
+            </div>
           </div>
 
           <div className="text-center pt-4 border-t border-[#C5A059]/15 text-[11px] text-[#5C4649]/70">
