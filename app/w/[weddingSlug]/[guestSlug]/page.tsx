@@ -119,7 +119,7 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
   return (
     <main className="relative min-h-[100dvh] w-full max-w-md mx-auto bg-[#FDFBF7] shadow-2xl overflow-hidden font-sans">
       {isLoadingScreen && (
-        <LoadingScreen onComplete={() => setIsLoadingScreen(false)} />
+        <LoadingScreen onFinish={() => setIsLoadingScreen(false)} />
       )}
 
       {!isCoverOpen && (
@@ -127,13 +127,11 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
           guestName={data.guest.name}
           groomName={data.settings.groomName}
           brideName={data.settings.brideName}
-          weddingDate={data.settings.weddingDate}
-          heroPhotoUrl={data.settings.heroPhotoUrl}
           onOpen={handleOpenInvitation}
         />
       )}
 
-      <MusicPlayer autoPlay={isCoverOpen} />
+      <MusicPlayer isPlaying={isCoverOpen} />
 
       <div
         className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${
@@ -151,7 +149,7 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
 
         <Couple settings={data.settings} />
 
-        <LoveStory stories={data.loveStories} />
+        <LoveStory stories={data.loveStories || []} />
 
         <SaveTheDate events={data.events} />
 

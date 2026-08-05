@@ -177,7 +177,13 @@ export default function AdminGuestsPage() {
 
   const openWhatsApp = (guest: Guest) => {
     const inviteUrl = `${window.location.origin}/invite/${guest.slug}`;
-    const waUrl = createWhatsAppShareUrl(guest.name, inviteUrl, guest.phone || undefined);
+    const waUrl = createWhatsAppShareUrl({
+      phone: guest.phone,
+      guestName: guest.name,
+      groomName: "Mempelai",
+      brideName: "Pasangan",
+      invitationUrl: inviteUrl,
+    });
     window.open(waUrl, "_blank");
   };
 

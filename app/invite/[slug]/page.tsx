@@ -41,6 +41,7 @@ export default function InvitationPage({ params }: PageProps) {
       brideInstagram?: string;
       bridePhotoUrl?: string;
       weddingDate: string;
+      heroPhotoUrl?: string;
       quoteText?: string;
       giftRecipient?: string;
       giftPhone?: string;

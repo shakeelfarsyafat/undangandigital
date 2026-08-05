@@ -41,6 +41,7 @@ export default function GeneralInvitationPage() {
       brideInstagram: "nabila.putri",
       bridePhotoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
       weddingDate: "2026-12-20",
+      heroPhotoUrl: "",
       quoteText: "Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri...",
       giftRecipient: "Ahmad Fauzi / Nabila Putri",
       giftPhone: "081234567890",

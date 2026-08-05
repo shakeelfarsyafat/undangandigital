@@ -7,18 +7,21 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-serif",
+  display: "swap",
 });
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
+  display: "swap",
 });
 
 const vibes = Great_Vibes({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-script",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

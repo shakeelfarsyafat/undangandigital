@@ -25,8 +25,32 @@ let mockRsvps: Array<{
   updatedAt: Date;
 }> = [];
 
-let mockSettings = {
+let mockSettings: {
+  id: string;
+  userId?: string | null;
+  groomName: string;
+  groomFullName: string;
+  groomFather: string;
+  groomMother: string;
+  groomInstagram?: string | null;
+  groomPhotoUrl?: string | null;
+  brideName: string;
+  brideFullName: string;
+  brideFather: string;
+  brideMother: string;
+  brideInstagram?: string | null;
+  bridePhotoUrl?: string | null;
+  weddingDate: string;
+  heroPhotoUrl?: string | null;
+  quoteText?: string | null;
+  giftRecipient?: string | null;
+  giftPhone?: string | null;
+  giftAddress?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+} = {
   id: "s-1",
+  userId: null,
   groomName: "Nama Groom",
   groomFullName: "Nama Lengkap Mempelai Pria",
   groomFather: "Nama Ayah",
@@ -109,8 +133,9 @@ let mockStories: Array<{
 
 let mockGallery: Array<{
   id: string;
+  userId?: string | null;
   imageUrl: string;
-  altText: string;
+  altText?: string | null;
   displayOrder: number;
 }> = [];
 
@@ -340,11 +365,20 @@ export async function updateWeddingSettings(data: {
   groomFullName?: string;
   groomFather?: string;
   groomMother?: string;
+  groomInstagram?: string | null;
+  groomPhotoUrl?: string | null;
   brideName?: string;
   brideFullName?: string;
   brideFather?: string;
   brideMother?: string;
+  brideInstagram?: string | null;
+  bridePhotoUrl?: string | null;
   weddingDate?: string;
+  heroPhotoUrl?: string | null;
+  quoteText?: string | null;
+  giftRecipient?: string | null;
+  giftPhone?: string | null;
+  giftAddress?: string | null;
 }) {
   try {
     const existing = await db.select().from(schema.weddingSettings).limit(1);
