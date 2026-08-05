@@ -19,19 +19,33 @@ const db = drizzle(sql, { schema });
 async function main() {
   console.log("🌱 Memulai seeding database Neon PostgreSQL...");
 
-  // 1. Seed Admin User
-  const passwordHash = await bcrypt.hash("admin123", 10);
+  // 1. Seed Super Admin User
+  const superPasswordHash = await bcrypt.hash("superadmin123", 10);
   await db
     .insert(schema.users)
     .values({
-      name: "Admin Wedding",
-      email: "admin@wedding.com",
-      passwordHash: passwordHash,
-      role: "admin",
+      name: "Super Admin Platform",
+      email: "superadmin@wedding.com",
+      passwordHash: superPasswordHash,
+      role: "superadmin",
     })
     .onConflictDoNothing({ target: schema.users.email });
 
-  console.log("✅ User Admin dibuat (admin@wedding.com / admin123)");
+  // 2. Seed Admin Mempelai User
+  const mempelaiPasswordHash = await bcrypt.hash("mempelai123", 10);
+  await db
+    .insert(schema.users)
+    .values({
+      name: "Admin Mempelai Ahmad & Nabila",
+      email: "mempelai@wedding.com",
+      passwordHash: mempelaiPasswordHash,
+      role: "admin_mempelai",
+      weddingSlug: "ahmad-nabila",
+    })
+    .onConflictDoNothing({ target: schema.users.email });
+
+  console.log("✅ User Super Admin dibuat (superadmin@wedding.com / superadmin123)");
+  console.log("✅ User Admin Mempelai dibuat (mempelai@wedding.com / mempelai123)");
 
   // 2. Seed Wedding Settings
   const existingSettings = await db.select().from(schema.weddingSettings).limit(1);

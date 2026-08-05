@@ -18,48 +18,58 @@ export async function POST(request: Request) {
     }
 
     const { email, password } = parsed.data;
+    const cleanEmail = email.toLowerCase().trim();
 
     let user: { id: string; name: string; email: string; passwordHash: string; role: string } | null = null;
 
     try {
-      const res = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      const res = await db.select().from(users).where(eq(users.email, cleanEmail)).limit(1);
       if (res.length > 0) {
         user = res[0];
       }
-    } catch (e) {
-      // DB offline fallback for default admin
-      if (email === "admin@wedding.com" && password === "admin123") {
+    } catch {
+      // Fallback below
+    }
+
+    // Default Fallbacks if DB query yields no user or DB offline
+    if (!user) {
+      if (cleanEmail === "superadmin@wedding.com" && password === "superadmin123") {
         const token = await createSession({
-          userId: "admin-default-id",
-          email: "admin@wedding.com",
-          name: "Admin Wedding",
-          role: "admin",
+          userId: "superadmin-id",
+          email: "superadmin@wedding.com",
+          name: "Super Admin Platform",
+          role: "superadmin",
         });
 
-        const response = NextResponse.json({ success: true, user: { email: "admin@wedding.com", name: "Admin Wedding" } });
+        const response = NextResponse.json({
+          success: true,
+          user: { id: "superadmin-id", email: "superadmin@wedding.com", name: "Super Admin Platform", role: "superadmin" },
+        });
+
         response.cookies.set("admin_token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           path: "/",
-          maxAge: 60 * 60 * 24 * 7, // 7 days
+          maxAge: 60 * 60 * 24 * 7,
         });
 
         return response;
       }
-    }
 
-    if (!user) {
-      // Default admin check fallback
-      if (email === "admin@wedding.com" && password === "admin123") {
+      if ((cleanEmail === "mempelai@wedding.com" || cleanEmail === "admin@wedding.com") && (password === "mempelai123" || password === "admin123")) {
         const token = await createSession({
-          userId: "admin-default-id",
-          email: "admin@wedding.com",
-          name: "Admin Wedding",
-          role: "admin",
+          userId: "mempelai-default-id",
+          email: "mempelai@wedding.com",
+          name: "Admin Mempelai Ahmad & Nabila",
+          role: "admin_mempelai",
         });
 
-        const response = NextResponse.json({ success: true, user: { email: "admin@wedding.com", name: "Admin Wedding" } });
+        const response = NextResponse.json({
+          success: true,
+          user: { id: "mempelai-default-id", email: "mempelai@wedding.com", name: "Admin Mempelai", role: "admin_mempelai" },
+        });
+
         response.cookies.set("admin_token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
@@ -100,7 +110,7 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch (error) {
-    return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Terjadi kesalahan server saat login" }, { status: 500 });
   }
 }
