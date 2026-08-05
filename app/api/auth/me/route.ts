@@ -13,13 +13,17 @@ export async function GET() {
 
     let weddingSlug = null;
     if (session.userId) {
-      const userRes = await db
-        .select({ weddingSlug: users.weddingSlug })
-        .from(users)
-        .where(eq(users.id, session.userId))
-        .limit(1);
-      if (userRes.length > 0) {
-        weddingSlug = userRes[0].weddingSlug;
+      try {
+        const userRes = await db
+          .select({ weddingSlug: users.weddingSlug })
+          .from(users)
+          .where(eq(users.id, session.userId))
+          .limit(1);
+        if (userRes.length > 0) {
+          weddingSlug = userRes[0].weddingSlug;
+        }
+      } catch {
+        // Safely catch non-UUID IDs (e.g. superadmin-id) or query issues
       }
     }
 
