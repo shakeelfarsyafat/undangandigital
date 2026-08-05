@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getWeddingSettings, getAllEvents, getAllBanks, getAllLoveStories } from "@/lib/data-store";
+import { getWeddingSettings, getEvents, getBankAccounts, getLoveStories } from "@/lib/data-store";
 
 export async function GET(request: Request) {
   try {
@@ -47,9 +47,9 @@ export async function GET(request: Request) {
     }
 
     const settings = await getWeddingSettings();
-    const events = await getAllEvents();
-    const banks = await getAllBanks();
-    const loveStories = await getAllLoveStories();
+    const events = await getEvents();
+    const banks = await getBankAccounts();
+    const loveStories = await getLoveStories();
 
     return NextResponse.json({
       guest: guestData,

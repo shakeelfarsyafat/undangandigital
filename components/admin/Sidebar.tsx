@@ -37,15 +37,14 @@ export function Sidebar({ userRole = "admin_mempelai", userEmail = "", weddingTi
     }
   };
 
-  const navItems = [
-    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { label: "Daftar Tamu & RSVP", href: "/admin/guests", icon: Users },
-    { label: "Data Mempelai", href: "/admin/settings", icon: Settings },
-  ];
-
-  if (userRole === "superadmin") {
-    navItems.push({ label: "Kelola Akun Mempelai", href: "/admin/users", icon: UserCheck });
-  }
+  const navItems =
+    userRole === "superadmin"
+      ? [{ label: "Kelola Akun Mempelai", href: "/admin/users", icon: UserCheck }]
+      : [
+          { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+          { label: "Daftar Tamu & RSVP", href: "/admin/guests", icon: Users },
+          { label: "Data Mempelai", href: "/admin/settings", icon: Settings },
+        ];
 
   const SidebarContent = () => (
     <div className="flex flex-col justify-between h-full p-6">

@@ -614,3 +614,8 @@ export async function updateLoveStories(storiesList: Array<{
   mockStories = updatedList;
   return mockStories;
 }
+
+// Aliases for compatibility
+export const getAllEvents = getEvents;
+export const getAllBanks = getBankAccounts;
+export const getAllLoveStories = getLoveStories;

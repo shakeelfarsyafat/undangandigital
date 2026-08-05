@@ -37,7 +37,11 @@ export default function RootPortalPage() {
       }
 
       toast.success("Login berhasil! Mengalihkan ke Dashboard...");
-      window.location.href = "/admin";
+      if (data.user?.role === "superadmin") {
+        window.location.href = "/admin/users";
+      } else {
+        window.location.href = "/admin";
+      }
     } catch (error: unknown) {
       const errMsg = error instanceof Error ? error.message : "Terjadi kesalahan";
       toast.error(errMsg);
@@ -167,46 +171,20 @@ export default function RootPortalPage() {
           {/* Tombol Demo Tampilan Undangan Publik */}
           <div className="relative z-10 space-y-3 pt-4 border-t border-[#C5A059]/20">
             <p className="text-xs font-semibold text-[#E6C887]">
-              Pilih Demo Tampilan Undangan:
+              Demo Tampilan Undangan Tamu:
             </p>
 
-            <div className="space-y-2.5">
-              <Link
-                href="/invite"
-                target="_blank"
-                className="w-full p-3.5 rounded-2xl bg-[#C5A059] hover:bg-[#b08c47] text-white flex items-center justify-between text-xs font-semibold shadow-md transition-all group"
-              >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span>Buka Demo Undangan (Umum)</span>
-                </div>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-
-              <Link
-                href="/invite/faza-mohamad"
-                target="_blank"
-                className="w-full p-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-[#C5A059]/30 text-white flex items-center justify-between text-xs font-semibold transition-all group"
-              >
-                <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-[#C5A059]" />
-                  <span>Contoh Undangan Personal (Tamu: Faza Mohamad)</span>
-                </div>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-
-              <Link
-                href="/w/ahmad-nabila/tamu-undangan"
-                target="_blank"
-                className="w-full p-3.5 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 text-[#E8DCC4] flex items-center justify-between text-xs font-medium transition-all group"
-              >
-                <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-[#C5A059]" />
-                  <span>Contoh Undangan Multi-Tenant (/w/ahmad-nabila)</span>
-                </div>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
+            <Link
+              href="/invite/faza-mohamad"
+              target="_blank"
+              className="w-full p-4 rounded-2xl bg-[#C5A059] hover:bg-[#b08c47] text-white flex items-center justify-between text-xs font-semibold shadow-lg transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4" />
+                <span>Lihat Contoh Undangan Tamu (Demo Live)</span>
+              </div>
+              <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
 
         </div>
