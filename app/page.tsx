@@ -89,17 +89,17 @@ export default function RootPortalPage() {
             <form onSubmit={handleLogin} className="space-y-4 pt-2">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-[#2C1A1D] block">
-                  Email Admin
+                  Email / Username Admin
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-[#A47E3B] absolute left-4 top-1/2 -translate-y-1/2" />
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-11 pr-4 py-3.5 bg-[#FAF8F5] rounded-xl border border-[#C5A059]/30 text-xs focus:outline-none focus:border-[#C5A059] transition-all text-[#2C1A1D]"
-                    placeholder="nama@domain.com"
+                    placeholder="novianti atau novianti@wedding.com"
                   />
                 </div>
               </div>
