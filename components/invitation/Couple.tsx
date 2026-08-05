@@ -53,18 +53,17 @@ export function Couple({ settings }: { settings: Settings }) {
           <JavaneseDivider className="w-36 h-6 sm:w-56 sm:h-10" />
         </motion.div>
 
-        {/* Groom & Bride Grid */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-6">
+        {/* Groom & Bride Vertical Stack */}
+        <div className="flex flex-col gap-3 sm:gap-4 max-w-sm w-full mx-auto">
           {/* Groom Card */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="glass-card-parchment p-3 sm:p-6 rounded-2xl space-y-2 shadow-lg border border-[#C5A059]/40 flex flex-col items-center relative overflow-hidden"
+            className="glass-card-parchment p-3.5 sm:p-4 rounded-2xl space-y-1.5 shadow-md border border-[#C5A059]/40 flex flex-col items-center relative overflow-hidden text-center"
           >
-
-            <div className="relative w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-3 border-[#C5A059] shadow-md">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-[#C5A059] shadow-md">
               <Image
                 src={settings.groomPhotoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80"}
                 alt={settings.groomFullName}
@@ -74,17 +73,16 @@ export function Couple({ settings }: { settings: Settings }) {
             </div>
 
             <div className="space-y-0.5">
-              <h3 className="font-serif text-sm sm:text-xl font-bold text-[#3E2211]">
+              <h3 className="font-serif text-sm sm:text-base font-bold text-[#3E2211]">
                 {settings.groomFullName}
               </h3>
-              <p className="text-[9px] sm:text-xs text-[#8B6508] font-bold uppercase tracking-wider">
+              <p className="text-[9px] sm:text-[10px] text-[#8B6508] font-bold uppercase tracking-wider">
                 Mempelai Pria
               </p>
             </div>
 
             <p className="text-[10px] sm:text-xs text-[#5C3A21] leading-tight">
-              Putra dari: <br />
-              <span className="font-semibold text-[#3E2211]">{settings.groomFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.groomMother}</span>
+              Putra dari: <span className="font-semibold text-[#3E2211]">{settings.groomFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.groomMother}</span>
             </p>
 
             {settings.groomInstagram && (
@@ -102,14 +100,13 @@ export function Couple({ settings }: { settings: Settings }) {
 
           {/* Bride Card */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
             viewport={{ once: true }}
-            className="glass-card-parchment p-3 sm:p-6 rounded-2xl space-y-2 shadow-lg border border-[#C5A059]/40 flex flex-col items-center relative overflow-hidden"
+            className="glass-card-parchment p-3.5 sm:p-4 rounded-2xl space-y-1.5 shadow-md border border-[#C5A059]/40 flex flex-col items-center relative overflow-hidden text-center"
           >
-
-            <div className="relative w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-3 border-[#C5A059] shadow-md">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-[#C5A059] shadow-md">
               <Image
                 src={settings.bridePhotoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80"}
                 alt={settings.brideFullName}
@@ -119,17 +116,16 @@ export function Couple({ settings }: { settings: Settings }) {
             </div>
 
             <div className="space-y-0.5">
-              <h3 className="font-serif text-sm sm:text-xl font-bold text-[#3E2211]">
+              <h3 className="font-serif text-sm sm:text-base font-bold text-[#3E2211]">
                 {settings.brideFullName}
               </h3>
-              <p className="text-[9px] sm:text-xs text-[#8B6508] font-bold uppercase tracking-wider">
+              <p className="text-[9px] sm:text-[10px] text-[#8B6508] font-bold uppercase tracking-wider">
                 Mempelai Wanita
               </p>
             </div>
 
             <p className="text-[10px] sm:text-xs text-[#5C3A21] leading-tight">
-              Putri dari: <br />
-              <span className="font-semibold text-[#3E2211]">{settings.brideFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.brideMother}</span>
+              Putri dari: <span className="font-semibold text-[#3E2211]">{settings.brideFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.brideMother}</span>
             </p>
 
             {settings.brideInstagram && (
