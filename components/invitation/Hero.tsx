@@ -22,7 +22,7 @@ export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
       </div>
 
       {/* Bottom Corner Ornaments */}
-      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

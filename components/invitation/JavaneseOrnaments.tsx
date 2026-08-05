@@ -82,7 +82,7 @@ export function MegamendungCloud({ className = "w-36 h-24 sm:w-48 sm:h-32" }: { 
 
 export function JavaneseCorner({
   position = "bottom-left",
-  className = "w-96 h-96 sm:w-[36rem] sm:h-[36rem]",
+  className = "w-64 h-64 sm:w-96 sm:h-96",
 }: {
   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   className?: string;
@@ -106,7 +106,7 @@ export function JavaneseCorner({
       whileInView={{ opacity: 0.95, scale: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       viewport={{ once: true }}
-      className={`absolute pointer-events-none z-10 ${getTransforms()} ${className}`}
+      className={`absolute pointer-events-none z-0 ${getTransforms()} ${className}`}
     >
       <Image
         src="/images/javanese/corner.png"
@@ -118,7 +118,7 @@ export function JavaneseCorner({
   );
 }
 
-export function JavaneseBottomCorners({ className = "w-96 h-96 sm:w-[36rem] sm:h-[36rem]" }: { className?: string }) {
+export function JavaneseBottomCorners({ className = "w-64 h-64 sm:w-96 sm:h-96" }: { className?: string }) {
   return (
     <>
       <JavaneseCorner position="bottom-left" className={className} />

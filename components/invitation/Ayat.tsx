@@ -9,7 +9,7 @@ export function Ayat() {
       {/* Dark Batik Texture Background */}
       <div className="absolute inset-0 bg-batik-pattern opacity-10" />
 
-      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem] opacity-90" />
+      <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96 opacity-90" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

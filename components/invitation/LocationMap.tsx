@@ -47,8 +47,8 @@ export function LocationMap({
   }, [targetDate]);
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start overflow-hidden">
-      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+    <section className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start overflow-hidden relative">
+      <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96" />
 
       <div className="max-w-xl w-full my-auto space-y-4 sm:space-y-5 relative z-20">
         {/* Header */}

@@ -25,7 +25,7 @@ export function Closing({ groomName, brideName }: ClosingProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#1E100A] via-[#1E100A]/80 to-[#1E100A]" />
       </div>
 
-      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem] opacity-90" />
+      <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96 opacity-90" />
 
       {/* Megamendung Cloud Floating */}
       <div className="absolute top-8 left-4 opacity-50 hidden sm:block">

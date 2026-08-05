@@ -15,8 +15,8 @@ export function LoveStory({ stories }: { stories: Story[] }) {
   if (!stories || stories.length === 0) return null;
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-16 px-6 bg-[#F7F2E7] text-center snap-start overflow-hidden">
-      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+    <section className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#F7F2E7] text-center snap-start overflow-hidden relative">
+      <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96" />
       <div className="max-w-lg mx-auto relative z-20 my-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

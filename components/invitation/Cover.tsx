@@ -22,7 +22,7 @@ export function Cover({ guestName, groomName, brideName, onOpen }: CoverProps) {
     >
       {/* Background Vintage Parchment Overlay */}
       <div className="absolute inset-3 sm:inset-5 z-0 rounded-3xl border-2 border-[#C5A059]/40 bg-[#FAF5EB]/90 shadow-2xl backdrop-blur-sm pointer-events-none overflow-hidden">
-        <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+        <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96" />
       </div>
 
       {/* Megamendung Clouds Left & Right */}
