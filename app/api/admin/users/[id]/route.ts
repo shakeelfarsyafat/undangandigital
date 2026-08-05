@@ -3,6 +3,9 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { removeMockUser } from "../route";
+
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function DELETE(
   request: Request,
@@ -10,19 +13,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    removeMockUser(id);
 
-    // Coba DB dulu
-    try {
-      await db.delete(schema.users).where(eq(schema.users.id, id));
-      return NextResponse.json({ success: true, message: "Akun berhasil dihapus" });
-    } catch (dbErr) {
-      // Jika DB offline — anggap berhasil (data di in-memory akan hilang sendiri)
-      console.warn("[DELETE /api/admin/users] DB offline:", dbErr);
-      return NextResponse.json({
-        success: true,
-        message: "Akun berhasil dihapus (mode offline)",
-      });
+    if (uuidRegex.test(id)) {
+      try {
+        await db.delete(schema.users).where(eq(schema.users.id, id));
+      } catch (dbErr) {
+        console.warn("[DELETE /api/admin/users] DB delete error:", dbErr);
+      }
     }
+
+    return NextResponse.json({ success: true, message: "Akun berhasil dihapus" });
   } catch (error) {
     console.error("[DELETE /api/admin/users] Error:", error);
     return NextResponse.json({ error: "Gagal menghapus akun" }, { status: 500 });
@@ -45,18 +46,15 @@ export async function PATCH(
       updates.passwordHash = await bcrypt.hash(newPassword, 10);
     }
 
-    // Coba DB dulu
-    try {
-      await db.update(schema.users).set(updates).where(eq(schema.users.id, id));
-      return NextResponse.json({ success: true, message: "Akun berhasil diperbarui" });
-    } catch (dbErr) {
-      // Jika DB offline — anggap berhasil
-      console.warn("[PATCH /api/admin/users] DB offline:", dbErr);
-      return NextResponse.json({
-        success: true,
-        message: "Akun berhasil diperbarui (mode offline)",
-      });
+    if (uuidRegex.test(id)) {
+      try {
+        await db.update(schema.users).set(updates).where(eq(schema.users.id, id));
+      } catch (dbErr) {
+        console.warn("[PATCH /api/admin/users] DB update error:", dbErr);
+      }
     }
+
+    return NextResponse.json({ success: true, message: "Akun berhasil diperbarui" });
   } catch (error) {
     console.error("[PATCH /api/admin/users] Error:", error);
     return NextResponse.json({ error: "Gagal memperbarui akun" }, { status: 500 });
