@@ -27,11 +27,14 @@ function firstNameSlug(fullName: string): string {
 
 export async function GET() {
   try {
-    const settings = await getWeddingSettings();
-    const events = await getEvents();
-    const banks = await getBankAccounts();
-    const gallery = await getGallery();
-    const loveStories = await getLoveStories();
+    const session = await getAdminSession();
+    const userId = session?.userId || null;
+
+    const settings = await getWeddingSettings(userId);
+    const events = await getEvents(userId);
+    const banks = await getBankAccounts(userId);
+    const gallery = await getGallery(userId);
+    const loveStories = await getLoveStories(userId);
     return NextResponse.json({ settings, events, banks, gallery, loveStories });
   } catch (error) {
     return NextResponse.json({ error: "Gagal memuat pengaturan" }, { status: 500 });
@@ -40,6 +43,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await getAdminSession();
+    const userId = session?.userId || null;
+
     const body = await request.json();
     let updatedSettings = null;
     let updatedEventsList = null;
@@ -48,7 +54,7 @@ export async function POST(request: Request) {
     let updatedStoriesList = null;
 
     if (body.settings) {
-      updatedSettings = await updateWeddingSettings(body.settings);
+      updatedSettings = await updateWeddingSettings(body.settings, userId);
     } else {
       updatedSettings = await updateWeddingSettings({
         groomName: body.groomName,
@@ -63,58 +69,55 @@ export async function POST(request: Request) {
         bridePhotoUrl: body.bridePhotoUrl,
         heroPhotoUrl: body.heroPhotoUrl,
         weddingDate: body.weddingDate,
-      });
+      }, userId);
     }
 
     // Auto-update weddingSlug di tabel users berdasarkan nama depan mempelai
     const groomName = body.groomName || body.settings?.groomName;
     const brideName = body.brideName || body.settings?.brideName;
 
-    if (groomName && brideName) {
+    if (groomName && brideName && session?.userId) {
       try {
-        const session = await getAdminSession();
-        if (session?.userId) {
-          const groomSlug = firstNameSlug(groomName);
-          const brideSlug = firstNameSlug(brideName);
-          if (groomSlug && brideSlug) {
-            let newSlug = `${groomSlug}-${brideSlug}`;
+        const groomSlug = firstNameSlug(groomName);
+        const brideSlug = firstNameSlug(brideName);
+        if (groomSlug && brideSlug) {
+          let newSlug = `${groomSlug}-${brideSlug}`;
 
-            // Cek apakah slug sudah dipakai akun lain
-            const existing = await db
-              .select()
-              .from(users)
-              .where(eq(users.weddingSlug, newSlug))
-              .limit(1);
+          // Cek apakah slug sudah dipakai akun lain
+          const existing = await db
+            .select()
+            .from(users)
+            .where(eq(users.weddingSlug, newSlug))
+            .limit(1);
 
-            if (existing.length > 0 && existing[0].id !== session.userId) {
-              newSlug = `${newSlug}-${Date.now().toString().slice(-4)}`;
-            }
-
-            await db
-              .update(users)
-              .set({ weddingSlug: newSlug })
-              .where(eq(users.id, session.userId));
+          if (existing.length > 0 && existing[0].id !== session.userId) {
+            newSlug = `${newSlug}-${Date.now().toString().slice(-4)}`;
           }
+
+          await db
+            .update(users)
+            .set({ weddingSlug: newSlug })
+            .where(eq(users.id, session.userId));
         }
       } catch {
-        // Jika gagal update slug, tetap lanjutkan — tidak critical
+        // Jika gagal update slug, tetap lanjutkan
       }
     }
 
     if (body.events && Array.isArray(body.events)) {
-      updatedEventsList = await updateEvents(body.events);
+      updatedEventsList = await updateEvents(body.events, userId);
     }
 
     if (body.banks && Array.isArray(body.banks)) {
-      updatedBanksList = await updateBankAccounts(body.banks);
+      updatedBanksList = await updateBankAccounts(body.banks, userId);
     }
 
     if (body.gallery && Array.isArray(body.gallery)) {
-      updatedGalleryList = await updateGallery(body.gallery);
+      updatedGalleryList = await updateGallery(body.gallery, userId);
     }
 
     if (body.loveStories && Array.isArray(body.loveStories)) {
-      updatedStoriesList = await updateLoveStories(body.loveStories);
+      updatedStoriesList = await updateLoveStories(body.loveStories, userId);
     }
 
     return NextResponse.json({

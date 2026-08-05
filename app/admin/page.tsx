@@ -14,6 +14,10 @@ import {
   Sparkles,
   ShieldCheck,
   UserPlus,
+  User,
+  Mail,
+  ExternalLink,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -31,8 +35,16 @@ interface AccountStats {
   totalAccounts: number;
 }
 
+interface UserProfile {
+  name: string;
+  email: string;
+  role: string;
+  weddingSlug?: string | null;
+}
+
 export default function AdminDashboardPage() {
   const [role, setRole] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [accountStats, setAccountStats] = useState<AccountStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,26 +52,29 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function load() {
       try {
-        // Cek role terlebih dahulu
+        // Cek role & profil user terlebih dahulu
         const meRes = await fetch("/api/auth/me");
         if (meRes.ok) {
           const meData = await meRes.json();
-          const userRole = meData.user?.role || null;
-          setRole(userRole);
+          if (meData.user) {
+            setUserProfile(meData.user);
+            const userRole = meData.user.role || null;
+            setRole(userRole);
 
-          if (userRole === "superadmin") {
-            // Muat statistik akun
-            const usersRes = await fetch("/api/admin/users");
-            if (usersRes.ok) {
-              const usersData = await usersRes.json();
-              setAccountStats({ totalAccounts: usersData.users?.length ?? 0 });
-            }
-          } else {
-            // Muat statistik undangan
-            const statsRes = await fetch("/api/admin/stats");
-            if (statsRes.ok) {
-              const json = await statsRes.json();
-              setStats(json.stats);
+            if (userRole === "superadmin") {
+              // Muat statistik akun
+              const usersRes = await fetch("/api/admin/users");
+              if (usersRes.ok) {
+                const usersData = await usersRes.json();
+                setAccountStats({ totalAccounts: usersData.users?.length ?? 0 });
+              }
+            } else {
+              // Muat statistik undangan
+              const statsRes = await fetch("/api/admin/stats");
+              if (statsRes.ok) {
+                const json = await statsRes.json();
+                setStats(json.stats);
+              }
             }
           }
         }
@@ -71,6 +86,8 @@ export default function AdminDashboardPage() {
     }
     load();
   }, []);
+
+  const initial = userProfile?.name ? userProfile.name.trim().charAt(0).toUpperCase() : "A";
 
   // === Tampilan Super Admin ===
   if (role === "superadmin") {
@@ -94,6 +111,31 @@ export default function AdminDashboardPage() {
             + Tambah Akun Mempelai
           </Link>
         </div>
+
+        {/* Account Info Profile Banner */}
+        {userProfile && (
+          <div className="bg-gradient-to-r from-[#2C1A1D] via-[#3E2211] to-[#1E100A] p-6 rounded-2xl border border-[#C5A059]/40 text-[#FFFDF9] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#8B6508] text-white flex items-center justify-center font-serif text-2xl font-bold shadow-lg border-2 border-[#F3E5AB]">
+                {initial}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-serif text-xl font-bold text-[#F3E5AB]">
+                    {userProfile.name}
+                  </h2>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#C5A059]/30 text-[#F3E5AB] border border-[#C5A059]/40 font-semibold uppercase tracking-wider">
+                    Super Admin
+                  </span>
+                </div>
+                <p className="text-xs text-[#E8DCC4]/80 mt-0.5 flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-[#C5A059]" />
+                  {userProfile.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stat Cards */}
         {isLoading ? (
@@ -173,10 +215,10 @@ export default function AdminDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#C5A059]/20 pb-6">
         <div>
           <h1 className="font-serif text-3xl font-bold text-[#2C1A1D]">
-            Dashboard Statistik
+            Dashboard Mempelai
           </h1>
           <p className="text-xs text-[#5C4649] font-light mt-1">
-            Ringkasan status undangan, keterbukaan link, dan estimasi kehadiran tamu.
+            Ringkasan statistik undangan, status kehadiran tamu, dan akses cepat ke pengaturan.
           </p>
         </div>
         <Link
@@ -187,6 +229,49 @@ export default function AdminDashboardPage() {
           + Kelola & Tambah Tamu
         </Link>
       </div>
+
+      {/* Prominent Account Profile Card */}
+      {userProfile && (
+        <div className="bg-gradient-to-r from-[#2C1A1D] via-[#3E2211] to-[#1E100A] p-6 rounded-2xl border border-[#C5A059]/40 text-[#FFFDF9] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#8B6508] text-white flex items-center justify-center font-serif text-2xl font-bold shadow-lg border-2 border-[#F3E5AB] shrink-0">
+              {initial}
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="font-serif text-xl font-bold text-[#F3E5AB]">
+                  {userProfile.name}
+                </h2>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#C5A059]/30 text-[#F3E5AB] border border-[#C5A059]/40 font-semibold uppercase tracking-wider">
+                  Admin Mempelai
+                </span>
+              </div>
+              <p className="text-xs text-[#E8DCC4]/80 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#C5A059]" />
+                {userProfile.email}
+              </p>
+              {userProfile.weddingSlug && (
+                <div className="flex items-center gap-2 text-xs text-[#C5A059] pt-1">
+                  <span className="font-medium text-[#E8DCC4]">Slug Pernikahan:</span>
+                  <code className="bg-white/10 px-2 py-0.5 rounded text-[#F3E5AB] font-mono text-[11px]">
+                    /w/{userProfile.weddingSlug}
+                  </code>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
+            <Link
+              href="/admin/settings"
+              className="btn-gold py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-md hover:scale-105 transition-transform"
+            >
+              <Settings className="w-4 h-4" />
+              Kelola Pengaturan
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Analytics Grid */}
       {isLoading ? (

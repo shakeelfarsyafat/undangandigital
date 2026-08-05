@@ -62,6 +62,7 @@ export const weddingSettings = pgTable("wedding_settings", {
   // Wedding General Info
   weddingDate: text("wedding_date").notNull(), // e.g. "2026-12-20"
   heroPhotoUrl: text("hero_photo_url"),
+  musicUrl: text("music_url"),
   quoteText: text("quote_text"),
   
   // Gift & Physical Gift Destination Info

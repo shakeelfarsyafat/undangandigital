@@ -68,11 +68,12 @@ export function WeddingGift({ banks, recipient, phone, address }: GiftProps) {
           {banks.map((bank, idx) => (
             <motion.div
               key={bank.id || idx}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: idx * 0.15 }}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ duration: 0.7, delay: idx * 0.15, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="glass-card-jawa p-6 rounded-3xl space-y-4 shadow-xl border border-[#D4AF37]/30 flex flex-col justify-between relative overflow-hidden text-left"
+              className="glass-card-parchment p-6 rounded-3xl space-y-4 shadow-xl border border-[#C5A059]/40 flex flex-col justify-between relative overflow-hidden text-left cursor-pointer"
             >
 
               <div className="space-y-2">

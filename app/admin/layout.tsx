@@ -7,7 +7,12 @@ import { Sidebar } from "@/components/admin/Sidebar";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userData, setUserData] = useState<{
+    name: string;
+    email: string;
+    role: string;
+    weddingSlug?: string | null;
+  } | null>(null);
   const [isChecking, setIsChecking] = useState(true);
 
   const isLoginPage = pathname === "/admin/login";
@@ -26,8 +31,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           return;
         }
         const data = await res.json();
-        const role = data.user?.role || null;
-        setUserRole(role);
+        const user = data.user;
+        setUserData(user);
+        const role = user?.role || null;
 
         // Superadmin hanya boleh akses /admin (dashboard) dan /admin/users
         if (role === "superadmin" && pathname !== "/admin" && !pathname.startsWith("/admin/users")) {
@@ -64,7 +70,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col md:flex-row font-sans text-[#2C1A1D]">
-      <Sidebar userRole={userRole ?? "admin_mempelai"} />
+      <Sidebar
+        userRole={userData?.role ?? "admin_mempelai"}
+        userName={userData?.name}
+        userEmail={userData?.email}
+        weddingTitle={userData?.name}
+      />
       <main className="flex-1 p-6 sm:p-10 overflow-y-auto max-w-6xl mx-auto w-full">
         {children}
       </main>

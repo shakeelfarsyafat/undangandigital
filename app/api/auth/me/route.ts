@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET() {
   try {
@@ -7,12 +10,26 @@ export async function GET() {
     if (!session) {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
     }
+
+    let weddingSlug = null;
+    if (session.userId) {
+      const userRes = await db
+        .select({ weddingSlug: users.weddingSlug })
+        .from(users)
+        .where(eq(users.id, session.userId))
+        .limit(1);
+      if (userRes.length > 0) {
+        weddingSlug = userRes[0].weddingSlug;
+      }
+    }
+
     return NextResponse.json({
       user: {
         userId: session.userId,
         email: session.email,
         name: session.name,
         role: session.role,
+        weddingSlug,
       },
     });
   } catch {

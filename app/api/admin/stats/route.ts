@@ -9,8 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const guests = await getAllGuests();
-    const rsvps = await getAllRsvps();
+    const [guests, rsvps] = await Promise.all([getAllGuests(), getAllRsvps()]);
 
     const totalGuests = guests.length;
     const opened = guests.filter((g) => g.invitationStatus === "opened").length;

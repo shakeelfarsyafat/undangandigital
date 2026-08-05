@@ -1,10 +1,11 @@
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 // Initial fallback mock data (Clean empty states)
 let mockGuests: Array<{
   id: string;
+  userId?: string | null;
   name: string;
   slug: string;
   phone: string | null;
@@ -78,6 +79,7 @@ let mockSettings: {
 
 let mockEvents: Array<{
   id: string;
+  userId?: string | null;
   type: string;
   title: string;
   date: string;
@@ -90,6 +92,7 @@ let mockEvents: Array<{
 }> = [
   {
     id: "e-1",
+    userId: null,
     type: "akad",
     title: "Akad Nikah",
     date: "Minggu, 20 Desember 2026",
@@ -102,6 +105,7 @@ let mockEvents: Array<{
   },
   {
     id: "e-2",
+    userId: null,
     type: "reception",
     title: "Resepsi Pernikahan",
     date: "Minggu, 20 Desember 2026",
@@ -116,6 +120,7 @@ let mockEvents: Array<{
 
 let mockBanks: Array<{
   id: string;
+  userId?: string | null;
   bankName: string;
   accountNumber: string;
   accountHolder: string;
@@ -125,6 +130,7 @@ let mockBanks: Array<{
 
 let mockStories: Array<{
   id: string;
+  userId?: string | null;
   year: string;
   title: string;
   description: string;
@@ -139,7 +145,7 @@ let mockGallery: Array<{
   displayOrder: number;
 }> = [];
 
-// Helper functions with automatic fallback
+// Helper functions with automatic fallback & multi-tenant userId support
 export async function getGuestBySlug(slug: string) {
   try {
     const res = await db.select().from(schema.guests).where(eq(schema.guests.slug, slug)).limit(1);
@@ -167,19 +173,23 @@ export async function markGuestOpened(id: string) {
   }
 }
 
-export async function getAllGuests() {
+export async function getAllGuests(userId?: string | null) {
   try {
-    const res = await db.select().from(schema.guests).orderBy(desc(schema.guests.createdAt));
+    const query = userId
+      ? db.select().from(schema.guests).where(eq(schema.guests.userId, userId)).orderBy(desc(schema.guests.createdAt))
+      : db.select().from(schema.guests).orderBy(desc(schema.guests.createdAt));
+    const res = await query;
     if (res.length > 0) return res;
   } catch (e) {
     // fallback
   }
-  return mockGuests;
+  return userId ? mockGuests.filter((g) => !g.userId || g.userId === userId) : mockGuests;
 }
 
-export async function createGuest(data: { name: string; slug: string; phone?: string; category: string }) {
+export async function createGuest(data: { name: string; slug: string; phone?: string; category: string; userId?: string | null }) {
   const newGuest = {
     id: `g-${Date.now()}`,
+    userId: data.userId || null,
     name: data.name,
     slug: data.slug,
     phone: data.phone || null,
@@ -191,7 +201,13 @@ export async function createGuest(data: { name: string; slug: string; phone?: st
   };
 
   try {
-    const res = await db.insert(schema.guests).values(data).returning();
+    const res = await db.insert(schema.guests).values({
+      userId: data.userId || null,
+      name: data.name,
+      slug: data.slug,
+      phone: data.phone || null,
+      category: data.category,
+    }).returning();
     if (res.length > 0) return res[0];
   } catch (e) {
     // fallback
@@ -202,14 +218,14 @@ export async function createGuest(data: { name: string; slug: string; phone?: st
 }
 
 export async function bulkCreateGuests(
-  guestsList: Array<{ name: string; phone?: string; category?: string }>
+  guestsList: Array<{ name: string; phone?: string; category?: string }>,
+  userId?: string | null
 ) {
   const createdList = [];
   for (let i = 0; i < guestsList.length; i++) {
     const item = guestsList[i];
     if (!item.name || !item.name.trim()) continue;
 
-    // Generate unique slug
     let baseSlug = item.name
       .toLowerCase()
       .trim()
@@ -225,6 +241,7 @@ export async function bulkCreateGuests(
 
     const guestObj = {
       id: `g-${Date.now()}-${i}`,
+      userId: userId || null,
       name: item.name.trim(),
       slug,
       phone: item.phone ? item.phone.trim() : null,
@@ -239,6 +256,7 @@ export async function bulkCreateGuests(
       const res = await db
         .insert(schema.guests)
         .values({
+          userId: userId || null,
           name: guestObj.name,
           slug: guestObj.slug,
           phone: guestObj.phone,
@@ -311,21 +329,38 @@ export async function upsertRsvp(data: { guestId: string; attendanceStatus: stri
   }
 }
 
-export async function getAllRsvps() {
+export async function getAllRsvps(userId?: string | null) {
   try {
-    const res = await db
-      .select({
-        id: schema.rsvps.id,
-        guestId: schema.rsvps.guestId,
-        guestName: schema.guests.name,
-        attendanceStatus: schema.rsvps.attendanceStatus,
-        guestCount: schema.rsvps.guestCount,
-        message: schema.rsvps.message,
-        createdAt: schema.rsvps.createdAt,
-      })
-      .from(schema.rsvps)
-      .innerJoin(schema.guests, eq(schema.rsvps.guestId, schema.guests.id))
-      .orderBy(desc(schema.rsvps.createdAt));
+    const query = userId
+      ? db
+          .select({
+            id: schema.rsvps.id,
+            guestId: schema.rsvps.guestId,
+            guestName: schema.guests.name,
+            attendanceStatus: schema.rsvps.attendanceStatus,
+            guestCount: schema.rsvps.guestCount,
+            message: schema.rsvps.message,
+            createdAt: schema.rsvps.createdAt,
+          })
+          .from(schema.rsvps)
+          .innerJoin(schema.guests, eq(schema.rsvps.guestId, schema.guests.id))
+          .where(eq(schema.guests.userId, userId))
+          .orderBy(desc(schema.rsvps.createdAt))
+      : db
+          .select({
+            id: schema.rsvps.id,
+            guestId: schema.rsvps.guestId,
+            guestName: schema.guests.name,
+            attendanceStatus: schema.rsvps.attendanceStatus,
+            guestCount: schema.rsvps.guestCount,
+            message: schema.rsvps.message,
+            createdAt: schema.rsvps.createdAt,
+          })
+          .from(schema.rsvps)
+          .innerJoin(schema.guests, eq(schema.rsvps.guestId, schema.guests.id))
+          .orderBy(desc(schema.rsvps.createdAt));
+
+    const res = await query;
     if (res.length > 0) return res;
   } catch (e) {
     // fallback
@@ -345,14 +380,18 @@ export async function getAllRsvps() {
   });
 }
 
-export async function getAllWishes() {
-  const rsvps = await getAllRsvps();
+export async function getAllWishes(userId?: string | null) {
+  const rsvps = await getAllRsvps(userId);
   return rsvps.filter((r) => r.message && r.message.trim() !== "");
 }
 
-export async function getWeddingSettings() {
+export async function getWeddingSettings(userId?: string | null) {
   try {
-    const res = await db.select().from(schema.weddingSettings).limit(1);
+    if (userId) {
+      const res = await db.select().from(schema.weddingSettings).where(eq(schema.weddingSettings.userId, userId)).limit(1);
+      if (res.length > 0) return res[0];
+    }
+    const res = await db.select().from(schema.weddingSettings).orderBy(desc(schema.weddingSettings.updatedAt)).limit(1);
     if (res.length > 0) return res[0];
   } catch (e) {
     // fallback
@@ -360,28 +399,35 @@ export async function getWeddingSettings() {
   return mockSettings;
 }
 
-export async function updateWeddingSettings(data: {
-  groomName?: string;
-  groomFullName?: string;
-  groomFather?: string;
-  groomMother?: string;
-  groomInstagram?: string | null;
-  groomPhotoUrl?: string | null;
-  brideName?: string;
-  brideFullName?: string;
-  brideFather?: string;
-  brideMother?: string;
-  brideInstagram?: string | null;
-  bridePhotoUrl?: string | null;
-  weddingDate?: string;
-  heroPhotoUrl?: string | null;
-  quoteText?: string | null;
-  giftRecipient?: string | null;
-  giftPhone?: string | null;
-  giftAddress?: string | null;
-}) {
+export async function updateWeddingSettings(
+  data: {
+    groomName?: string;
+    groomFullName?: string;
+    groomFather?: string;
+    groomMother?: string;
+    groomInstagram?: string | null;
+    groomPhotoUrl?: string | null;
+    brideName?: string;
+    brideFullName?: string;
+    brideFather?: string;
+    brideMother?: string;
+    brideInstagram?: string | null;
+    bridePhotoUrl?: string | null;
+    weddingDate?: string;
+    heroPhotoUrl?: string | null;
+    musicUrl?: string | null;
+    quoteText?: string | null;
+    giftRecipient?: string | null;
+    giftPhone?: string | null;
+    giftAddress?: string | null;
+  },
+  userId?: string | null
+) {
   try {
-    const existing = await db.select().from(schema.weddingSettings).limit(1);
+    const existing = userId
+      ? await db.select().from(schema.weddingSettings).where(eq(schema.weddingSettings.userId, userId)).limit(1)
+      : await db.select().from(schema.weddingSettings).limit(1);
+
     if (existing.length > 0) {
       const res = await db
         .update(schema.weddingSettings)
@@ -395,6 +441,27 @@ export async function updateWeddingSettings(data: {
         mockSettings = { ...mockSettings, ...res[0] };
         return res[0];
       }
+    } else if (userId) {
+      const res = await db
+        .insert(schema.weddingSettings)
+        .values({
+          ...data,
+          userId,
+          groomName: data.groomName || "Mempelai Pria",
+          groomFullName: data.groomFullName || "Nama Lengkap Mempelai Pria",
+          groomFather: data.groomFather || "Ayah Mempelai Pria",
+          groomMother: data.groomMother || "Ibu Mempelai Pria",
+          brideName: data.brideName || "Mempelai Wanita",
+          brideFullName: data.brideFullName || "Nama Lengkap Mempelai Wanita",
+          brideFather: data.brideFather || "Ayah Mempelai Wanita",
+          brideMother: data.brideMother || "Ibu Mempelai Wanita",
+          weddingDate: data.weddingDate || "2026-12-20",
+        })
+        .returning();
+      if (res.length > 0) {
+        mockSettings = { ...mockSettings, ...res[0] };
+        return res[0];
+      }
     }
   } catch (e) {
     // fallback
@@ -403,14 +470,18 @@ export async function updateWeddingSettings(data: {
   mockSettings = {
     ...mockSettings,
     ...data,
+    userId: userId || mockSettings.userId,
     updatedAt: new Date(),
   };
   return mockSettings;
 }
 
-export async function getEvents() {
+export async function getEvents(userId?: string | null) {
   try {
-    const res = await db.select().from(schema.events).orderBy(schema.events.displayOrder);
+    const query = userId
+      ? db.select().from(schema.events).where(eq(schema.events.userId, userId)).orderBy(schema.events.displayOrder)
+      : db.select().from(schema.events).orderBy(schema.events.displayOrder);
+    const res = await query;
     if (res.length > 0) return res;
   } catch (e) {
     // fallback
@@ -418,36 +489,50 @@ export async function getEvents() {
   return mockEvents;
 }
 
-export async function updateEvents(eventsList: Array<{
-  id: string;
-  type: string;
-  title: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  venueName: string;
-  venueAddress: string;
-  mapsUrl: string;
-}>) {
+export async function updateEvents(
+  eventsList: Array<{
+    id: string;
+    type: string;
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    venueName: string;
+    venueAddress: string;
+    mapsUrl: string;
+  }>,
+  userId?: string | null
+) {
   for (const item of eventsList) {
     try {
-      const res = await db
-        .update(schema.events)
-        .set({
-          title: item.title,
-          date: item.date,
-          startTime: item.startTime,
-          endTime: item.endTime,
-          venueName: item.venueName,
-          venueAddress: item.venueAddress,
-          mapsUrl: item.mapsUrl,
-          updatedAt: new Date(),
-        })
-        .where(eq(schema.events.id, item.id))
-        .returning();
-      if (res.length > 0) {
-        const idx = mockEvents.findIndex((e) => e.id === item.id);
-        if (idx !== -1) mockEvents[idx] = { ...mockEvents[idx], ...res[0] };
+      const existing = userId
+        ? await db.select().from(schema.events).where(and(eq(schema.events.id, item.id), eq(schema.events.userId, userId))).limit(1)
+        : await db.select().from(schema.events).where(eq(schema.events.id, item.id)).limit(1);
+
+      if (existing.length > 0) {
+        const res = await db
+          .update(schema.events)
+          .set({
+            title: item.title,
+            date: item.date,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            venueName: item.venueName,
+            venueAddress: item.venueAddress,
+            mapsUrl: item.mapsUrl,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.events.id, existing[0].id))
+          .returning();
+        if (res.length > 0) {
+          const idx = mockEvents.findIndex((e) => e.id === item.id);
+          if (idx !== -1) mockEvents[idx] = { ...mockEvents[idx], ...res[0] };
+        }
+      } else if (userId) {
+        await db.insert(schema.events).values({
+          ...item,
+          userId,
+        });
       }
     } catch (e) {
       // fallback
@@ -465,9 +550,12 @@ export async function updateEvents(eventsList: Array<{
   return mockEvents;
 }
 
-export async function getBankAccounts() {
+export async function getBankAccounts(userId?: string | null) {
   try {
-    const res = await db.select().from(schema.bankAccounts).orderBy(schema.bankAccounts.displayOrder);
+    const query = userId
+      ? db.select().from(schema.bankAccounts).where(eq(schema.bankAccounts.userId, userId)).orderBy(schema.bankAccounts.displayOrder)
+      : db.select().from(schema.bankAccounts).orderBy(schema.bankAccounts.displayOrder);
+    const res = await query;
     if (res.length > 0) return res;
   } catch (e) {
     // fallback
@@ -475,20 +563,24 @@ export async function getBankAccounts() {
   return mockBanks;
 }
 
-export async function updateBankAccounts(banksList: Array<{
-  id?: string;
-  bankName: string;
-  accountNumber: string;
-  accountHolder: string;
-  displayOrder?: number;
-  isActive?: boolean;
-}>) {
+export async function updateBankAccounts(
+  banksList: Array<{
+    id?: string;
+    bankName: string;
+    accountNumber: string;
+    accountHolder: string;
+    displayOrder?: number;
+    isActive?: boolean;
+  }>,
+  userId?: string | null
+) {
   const updatedList = [];
   for (let i = 0; i < banksList.length; i++) {
     const item = banksList[i];
     const bankId = item.id || `b-${Date.now()}-${i}`;
     const bankObj = {
       id: bankId,
+      userId: userId || null,
       bankName: item.bankName,
       accountNumber: item.accountNumber,
       accountHolder: item.accountHolder,
@@ -515,7 +607,10 @@ export async function updateBankAccounts(banksList: Array<{
       } else {
         const res = await db
           .insert(schema.bankAccounts)
-          .values(bankObj)
+          .values({
+            ...bankObj,
+            userId: userId || null,
+          })
           .returning();
         if (res.length > 0) updatedList.push(res[0]);
         else updatedList.push(bankObj);
@@ -529,9 +624,12 @@ export async function updateBankAccounts(banksList: Array<{
   return mockBanks;
 }
 
-export async function getLoveStories() {
+export async function getLoveStories(userId?: string | null) {
   try {
-    const res = await db.select().from(schema.loveStories).orderBy(schema.loveStories.displayOrder);
+    const query = userId
+      ? db.select().from(schema.loveStories).where(eq(schema.loveStories.userId, userId)).orderBy(schema.loveStories.displayOrder)
+      : db.select().from(schema.loveStories).orderBy(schema.loveStories.displayOrder);
+    const res = await query;
     if (res.length > 0) return res;
   } catch (e) {
     // fallback
@@ -539,9 +637,12 @@ export async function getLoveStories() {
   return mockStories;
 }
 
-export async function getGallery() {
+export async function getGallery(userId?: string | null) {
   try {
-    const res = await db.select().from(schema.gallery).orderBy(schema.gallery.displayOrder);
+    const query = userId
+      ? db.select().from(schema.gallery).where(eq(schema.gallery.userId, userId)).orderBy(schema.gallery.displayOrder)
+      : db.select().from(schema.gallery).orderBy(schema.gallery.displayOrder);
+    const res = await query;
     if (res.length > 0) return res;
   } catch (e) {
     // fallback
@@ -549,17 +650,21 @@ export async function getGallery() {
   return mockGallery;
 }
 
-export async function updateGallery(galleryList: Array<{
-  id?: string;
-  imageUrl: string;
-  altText?: string;
-  displayOrder?: number;
-}>) {
+export async function updateGallery(
+  galleryList: Array<{
+    id?: string;
+    imageUrl: string;
+    altText?: string;
+    displayOrder?: number;
+  }>,
+  userId?: string | null
+) {
   const updatedList = [];
   for (let i = 0; i < galleryList.length; i++) {
     const item = galleryList[i];
     const itemObj = {
       id: item.id || `g-img-${Date.now()}-${i}`,
+      userId: userId || null,
       imageUrl: item.imageUrl,
       altText: item.altText || `Foto Prewedding ${i + 1}`,
       displayOrder: i + 1,
@@ -583,7 +688,10 @@ export async function updateGallery(galleryList: Array<{
       } else {
         const res = await db
           .insert(schema.gallery)
-          .values(itemObj)
+          .values({
+            ...itemObj,
+            userId: userId || null,
+          })
           .returning();
         if (res.length > 0) updatedList.push(res[0]);
         else updatedList.push(itemObj);
@@ -597,19 +705,23 @@ export async function updateGallery(galleryList: Array<{
   return mockGallery;
 }
 
-export async function updateLoveStories(storiesList: Array<{
-  id?: string;
-  year: string;
-  title: string;
-  description: string;
-  displayOrder?: number;
-}>) {
+export async function updateLoveStories(
+  storiesList: Array<{
+    id?: string;
+    year: string;
+    title: string;
+    description: string;
+    displayOrder?: number;
+  }>,
+  userId?: string | null
+) {
   const updatedList = [];
   for (let i = 0; i < storiesList.length; i++) {
     const item = storiesList[i];
     const storyId = item.id || `ls-${Date.now()}-${i}`;
     const storyObj = {
       id: storyId,
+      userId: userId || null,
       year: item.year,
       title: item.title,
       description: item.description,
@@ -635,7 +747,10 @@ export async function updateLoveStories(storiesList: Array<{
       } else {
         const res = await db
           .insert(schema.loveStories)
-          .values(storyObj)
+          .values({
+            ...storyObj,
+            userId: userId || null,
+          })
           .returning();
         if (res.length > 0) updatedList.push(res[0]);
         else updatedList.push(storyObj);

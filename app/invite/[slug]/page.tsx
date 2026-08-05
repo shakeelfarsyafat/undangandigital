@@ -44,6 +44,7 @@ export default function InvitationPage({ params }: PageProps) {
       bridePhotoUrl?: string;
       weddingDate: string;
       heroPhotoUrl?: string;
+      musicUrl?: string | null;
       quoteText?: string;
       giftRecipient?: string;
       giftPhone?: string;
@@ -117,29 +118,33 @@ export default function InvitationPage({ params }: PageProps) {
     };
   }, [isCoverOpen]);
 
-  if (!data) {
-    return <LoadingScreen />;
-  }
-
   return (
     <main className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-[#FAF8F5] relative max-w-md mx-auto shadow-2xl border-x border-[#C5A059]/10 overflow-hidden">
       {/* Loading Screen */}
       {isLoadingScreen && (
-        <LoadingScreen onFinish={() => setIsLoadingScreen(false)} />
-      )}
-
-      {/* Fullscreen Cover Modal */}
-      {!isCoverOpen && (
-        <Cover
-          guestName={data.guest.name}
-          groomName={data.settings.groomName}
-          brideName={data.settings.brideName}
-          onOpen={() => setIsCoverOpen(true)}
+        <LoadingScreen
+          groomName={data?.settings?.groomName}
+          brideName={data?.settings?.brideName}
+          onFinish={() => {
+            setIsLoadingScreen(false);
+          }}
         />
       )}
 
+      {data && (
+        <>
+          {/* Fullscreen Cover Modal */}
+          {!isCoverOpen && (
+            <Cover
+              guestName={data.guest.name}
+              groomName={data.settings.groomName}
+              brideName={data.settings.brideName}
+              onOpen={() => setIsCoverOpen(true)}
+            />
+          )}
+
       {/* Floating Music Player */}
-      <MusicPlayer isPlaying={isCoverOpen} />
+      <MusicPlayer isPlaying={isCoverOpen} musicUrl={data.settings.musicUrl} />
 
       {/* Main Invitation Sections with Snap Scrolling */}
       <div className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${!isCoverOpen ? "opacity-30 blur-sm pointer-events-none" : "opacity-100"}`}>
@@ -176,6 +181,8 @@ export default function InvitationPage({ params }: PageProps) {
           brideName={data.settings.brideName}
         />
       </div>
+        </>
+      )}
     </main>
   );
 }

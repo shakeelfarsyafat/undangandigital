@@ -46,10 +46,12 @@ export async function GET(request: Request) {
       };
     }
 
-    const settings = await getWeddingSettings();
-    const events = await getEvents();
-    const banks = await getBankAccounts();
-    const loveStories = await getLoveStories();
+    const [settings, events, banks, loveStories] = await Promise.all([
+      getWeddingSettings(userId),
+      getEvents(userId),
+      getBankAccounts(userId),
+      getLoveStories(userId),
+    ]);
 
     return NextResponse.json({
       guest: guestData,

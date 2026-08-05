@@ -33,17 +33,18 @@ export async function POST(request: Request) {
 
     // Default Fallbacks if DB query yields no user or DB offline
     if (!user) {
-      if (cleanEmail === "superadmin@wedding.com" && password === "superadmin123") {
+      if ((cleanEmail === "superadmin@wedding.com" || cleanEmail === "admin@wedding.com") && (password === "superadmin123" || password === "admin123")) {
+        const emailName = cleanEmail === "admin@wedding.com" ? "Admin Platform" : "Super Admin Platform";
         const token = await createSession({
           userId: "superadmin-id",
-          email: "superadmin@wedding.com",
-          name: "Super Admin Platform",
+          email: cleanEmail,
+          name: emailName,
           role: "superadmin",
         });
 
         const response = NextResponse.json({
           success: true,
-          user: { id: "superadmin-id", email: "superadmin@wedding.com", name: "Super Admin Platform", role: "superadmin" },
+          user: { id: "superadmin-id", email: cleanEmail, name: emailName, role: "superadmin" },
         });
 
         response.cookies.set("admin_token", token, {
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
         return response;
       }
 
-      if ((cleanEmail === "mempelai@wedding.com" || cleanEmail === "admin@wedding.com") && (password === "mempelai123" || password === "admin123")) {
+      if (cleanEmail === "mempelai@wedding.com" && password === "mempelai123") {
         const token = await createSession({
           userId: "mempelai-default-id",
           email: "mempelai@wedding.com",

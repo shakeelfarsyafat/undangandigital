@@ -4,13 +4,29 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { MegamendungCloud, JavaneseDivider } from "./JavaneseOrnaments";
 
-export function LoadingScreen({ onFinish }: { onFinish?: () => void }) {
+export function LoadingScreen({
+  groomName,
+  brideName,
+  onFinish,
+}: {
+  groomName?: string;
+  brideName?: string;
+  onFinish?: () => void;
+}) {
+  const handleAnimationComplete = () => {
+    if (onFinish) {
+      setTimeout(() => {
+        onFinish();
+      }, 0);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
-      transition={{ duration: 0.9, delay: 2.2 }}
-      onAnimationComplete={onFinish}
+      transition={{ duration: 0.5, delay: 0.6 }}
+      onAnimationComplete={handleAnimationComplete}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gold-dots text-[#3E2211] px-4 overflow-hidden"
     >
       {/* Background Vintage Card Frame */}
@@ -30,7 +46,7 @@ export function LoadingScreen({ onFinish }: { onFinish?: () => void }) {
         transition={{ duration: 1, ease: "easeOut" }}
         className="text-center space-y-4 relative z-10 max-w-xs"
       >
-        {/* Large Prominent Gunungan Animation matching Screenshot 1 */}
+        {/* Large Prominent Gunungan Animation */}
         <motion.div
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -49,9 +65,15 @@ export function LoadingScreen({ onFinish }: { onFinish?: () => void }) {
           <p className="text-[11px] uppercase tracking-[0.4em] text-[#8B6508] font-bold">
             Pawiwahan Ageng
           </p>
-          <h1 className="font-serif text-3xl font-bold text-[#3E2211]">
-            Ahmad & Nabila
-          </h1>
+          {groomName && brideName ? (
+            <h1 className="font-serif text-3xl font-bold text-[#3E2211]">
+              {groomName} & {brideName}
+            </h1>
+          ) : (
+            <h1 className="font-serif text-2xl font-bold text-[#8B6508] animate-pulse">
+              Undangan Digital
+            </h1>
+          )}
         </div>
 
         <JavaneseDivider className="w-44 h-8" />

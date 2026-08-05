@@ -30,7 +30,7 @@
   }
 }
 
-/* Gold Dot Pattern Background matching Screenshot 1 */
+/* Gold Dot Pattern Background */
 .bg-gold-dots {
   background-color: #FAF5EB;
   background-image: radial-gradient(#C5A059 1.5px, transparent 1.5px);
@@ -48,6 +48,13 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1.5px solid rgba(197, 160, 89, 0.45);
   box-shadow: 0 16px 40px -10px rgba(62, 34, 17, 0.15);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-parchment:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 45px -8px rgba(197, 160, 89, 0.35);
+  border-color: rgba(197, 160, 89, 0.8);
 }
 
 .glass-card-jawa-dark {
@@ -56,32 +63,60 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1.5px solid rgba(212, 175, 55, 0.5);
   box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.45);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-jawa-dark:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -5px rgba(212, 175, 55, 0.35);
+  border-color: rgba(212, 175, 55, 0.8);
 }
 
 /* Golden Glow Effect for Gunungan */
 .gunungan-glow {
   filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.65));
+  animation: pulse-glow-anim 4s infinite ease-in-out;
 }
 
 .gunungan-glow-large {
   filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.8));
+  animation: float-glow-anim 5s infinite ease-in-out;
 }
 
 /* Gold Button Javanese */
 .btn-jawa-gold {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(135deg, #C5A059 0%, #8B6508 100%);
   color: #FFFFFF;
   font-weight: 600;
   box-shadow: 0 6px 20px 0 rgba(197, 160, 89, 0.45);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: 1px solid #F3E5AB;
+}
+
+.btn-jawa-gold::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 70%
+  );
+  transform: rotate(30deg);
+  animation: btn-shine 3.5s infinite;
 }
 
 .btn-jawa-gold:hover {
   background: linear-gradient(135deg, #F3E5AB 0%, #C5A059 100%);
   color: #3E2211;
-  box-shadow: 0 8px 25px 0 rgba(197, 160, 89, 0.65);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 30px 0 rgba(197, 160, 89, 0.7);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* Custom Scrollbar */
@@ -94,4 +129,63 @@
 ::-webkit-scrollbar-thumb {
   background: #C5A059;
   border-radius: 3px;
+}
+
+/* Keyframes Animations for Floating and Shimmer Effects */
+@keyframes btn-shine {
+  0% {
+    transform: translateX(-100%) rotate(30deg);
+  }
+  20%, 100% {
+    transform: translateX(100%) rotate(30deg);
+  }
+}
+
+@keyframes pulse-glow-anim {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px rgba(212, 175, 55, 0.9));
+  }
+}
+
+@keyframes float-glow-anim {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.7));
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+    filter: drop-shadow(0 0 45px rgba(212, 175, 55, 1));
+  }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-25px) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-50px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.animate-float-particle {
+  animation: float-particle 4s infinite ease-in-out;
+}
+
+.gold-avatar-ring {
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.4), 0 0 20px rgba(197, 160, 89, 0.3);
+  transition: all 0.4s ease;
+}
+
+.gold-avatar-ring:hover {
+  box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.8), 0 0 30px rgba(197, 160, 89, 0.6);
+  transform: scale(1.05);
 }

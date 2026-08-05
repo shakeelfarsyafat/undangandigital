@@ -25,8 +25,8 @@ const vibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "Undangan Pernikahan Digital Premium | Ahmad & Nabila",
-  description: "Undangan Pernikahan Digital Mempelai Ahmad Fauzi & Nabila Putri",
+  title: "Undangan Pernikahan Digital Premium",
+  description: "Platform & Portal Undangan Pernikahan Digital Premium",
 };
 
 export default function RootLayout({

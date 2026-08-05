@@ -4,7 +4,13 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Music, Pause, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function MusicPlayer({ isPlaying: initialPlaying = false }: { isPlaying?: boolean }) {
+export function MusicPlayer({
+  isPlaying: initialPlaying = false,
+  musicUrl,
+}: {
+  isPlaying?: boolean;
+  musicUrl?: string | null;
+}) {
   const [isPlaying, setIsPlaying] = useState(initialPlaying);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -79,17 +85,23 @@ export function MusicPlayer({ isPlaying: initialPlaying = false }: { isPlaying?:
   }, [isPlaying, startSynthMusic, stopSynthMusic]);
 
   useEffect(() => {
+    let isMounted = true;
     if (initialPlaying) {
       if (audioRef.current) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+        audioRef.current.play().then(() => {
+          if (isMounted) setIsPlaying(true);
+        }).catch(() => {
           startSynthMusic();
-          setIsPlaying(true);
+          if (isMounted) setIsPlaying(true);
         });
       } else {
         startSynthMusic();
-        setIsPlaying(true);
+        if (isMounted) setIsPlaying(true);
       }
     }
+    return () => {
+      isMounted = false;
+    };
   }, [initialPlaying, startSynthMusic]);
 
   useEffect(() => {
@@ -102,7 +114,7 @@ export function MusicPlayer({ isPlaying: initialPlaying = false }: { isPlaying?:
     <>
       <audio
         ref={audioRef}
-        src="/music/wedding.mp3"
+        src={musicUrl || "/music/wedding.mp3"}
         loop
         preload="auto"
       />

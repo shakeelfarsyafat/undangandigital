@@ -17,15 +17,24 @@ interface EventItem {
   mapsUrl: string;
 }
 
-export function SaveTheDate({ events }: { events: EventItem[] }) {
+export function SaveTheDate({
+  events,
+  groomName = "Mempelai",
+  brideName = "Pengantin",
+}: {
+  events: EventItem[];
+  groomName?: string;
+  brideName?: string;
+}) {
   const downloadICS = (event: EventItem) => {
     try {
+      const titleText = `${groomName} & ${brideName}`;
       const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Wedding Invitation//ID
 BEGIN:VEVENT
-SUMMARY:Pawiwahan Ageng Ahmad & Nabila - ${event.title}
-DESCRIPTION:${event.title} Ahmad & Nabila bertempat di ${event.venueName}
+SUMMARY:Pawiwahan Ageng ${titleText} - ${event.title}
+DESCRIPTION:${event.title} ${titleText} bertempat di ${event.venueName}
 LOCATION:${event.venueAddress}
 DTSTART:20261220T080000Z
 DTEND:20261220T150000Z
@@ -35,7 +44,7 @@ END:VCALENDAR`;
       const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8;" });
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute("download", `pernikahan-ahmad-nabila-${event.type}.ics`);
+      link.setAttribute("download", `pernikahan-${event.type}.ics`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -72,11 +81,12 @@ END:VCALENDAR`;
           {events.map((evt, idx) => (
             <motion.div
               key={evt.id || idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: idx * 0.15 }}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              whileHover={{ y: -6, scale: 1.02 }}
+              transition={{ duration: 0.7, delay: idx * 0.15, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="glass-card-parchment p-4 sm:p-6 rounded-2xl space-y-3 shadow-lg border border-[#C5A059]/40 flex flex-col justify-between relative overflow-hidden text-left"
+              className="glass-card-parchment p-4 sm:p-6 rounded-2xl space-y-3 shadow-lg border border-[#C5A059]/40 flex flex-col justify-between relative overflow-hidden text-left cursor-pointer"
             >
 
               <div className="space-y-2">
@@ -110,13 +120,15 @@ END:VCALENDAR`;
                 </div>
               </div>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => downloadICS(evt)}
                 className="w-full btn-jawa-gold py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 text-[11px] font-semibold cursor-pointer mt-1"
               >
-                <CalendarPlus className="w-3.5 h-3.5" />
+                <CalendarPlus className="w-3.5 h-3.5 animate-pulse text-[#F3E5AB]" />
                 Simpan ke Kalender
-              </button>
+              </motion.button>
             </motion.div>
           ))}
         </div>

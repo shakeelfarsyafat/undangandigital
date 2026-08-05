@@ -14,6 +14,20 @@ export async function POST(request: Request) {
       );
     }
 
+    if (parsed.data.guestId.startsWith("demo")) {
+      return NextResponse.json({
+        success: true,
+        rsvp: {
+          id: `demo-r-${Date.now()}`,
+          guestId: parsed.data.guestId,
+          attendanceStatus: parsed.data.attendanceStatus,
+          guestCount: parsed.data.guestCount,
+          message: parsed.data.message || "",
+          createdAt: new Date(),
+        },
+      });
+    }
+
     const savedRsvp = await upsertRsvp(parsed.data);
     return NextResponse.json({ success: true, rsvp: savedRsvp });
   } catch (error) {

@@ -11,8 +11,9 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const guests = await getAllGuests();
-    const rsvps = await getAllRsvps();
+    const userId = session.role === "superadmin" ? null : session.userId;
+    const guests = await getAllGuests(userId);
+    const rsvps = await getAllRsvps(userId);
 
     const rsvpMap = new Map(rsvps.map((r) => [r.guestId, r]));
 
@@ -46,11 +47,11 @@ export async function POST(request: Request) {
     }
 
     const { name, phone, category } = parsed.data;
+    const userId = session.userId;
 
-    // Slug generation algorithm with unique duplicate handling
     const baseSlug = slugify(name);
     let finalSlug = baseSlug;
-    const existingGuests = await getAllGuests();
+    const existingGuests = await getAllGuests(userId);
     const existingSlugs = new Set(existingGuests.map((g) => g.slug));
 
     let count = 2;
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
     }
 
     const newGuest = await createGuest({
+      userId,
       name,
       slug: finalSlug,
       phone,

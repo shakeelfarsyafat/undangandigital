@@ -24,6 +24,15 @@ let mockUsers: Array<{
     createdAt: new Date("2026-01-01"),
   },
   {
+    id: "admin-id",
+    name: "Admin Platform",
+    email: "admin@wedding.com",
+    passwordHash: "$2a$10$placeholder",
+    role: "superadmin",
+    weddingSlug: null,
+    createdAt: new Date("2026-01-01"),
+  },
+  {
     id: "mempelai-id",
     name: "Mempelai Demo",
     email: "mempelai@wedding.com",

@@ -49,14 +49,11 @@ function generateEmail(name: string): string {
   );
 }
 
-// Generate password random 10 karakter
-function generatePassword(): string {
-  const chars = "abcdefghijkmnpqrstuvwxyz23456789";
-  let pw = "";
-  for (let i = 0; i < 10; i++) {
-    pw += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return pw;
+// Generate password dari nama awal mempelai + diakhiri "123"
+function generatePassword(name?: string): string {
+  if (!name || !name.trim()) return "mempelai123";
+  const firstWord = name.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+  return (firstWord || "mempelai") + "123";
 }
 
 export default function SuperAdminUsersPage() {
@@ -98,20 +95,22 @@ export default function SuperAdminUsersPage() {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Update auto email saat nama berubah
+  // Update auto email & auto password saat nama berubah
   useEffect(() => {
     if (nameInput) {
       setAutoEmail(generateEmail(nameInput));
+      setAutoPassword(generatePassword(nameInput));
     } else {
       setAutoEmail("");
+      setAutoPassword("");
     }
   }, [nameInput]);
 
-  // Buka modal tambah — generate password baru tiap kali
+  // Buka modal tambah
   const openAddModal = () => {
     setNameInput("");
     setAutoEmail("");
-    setAutoPassword(generatePassword());
+    setAutoPassword("");
     setIsAddModalOpen(true);
   };
 
@@ -375,7 +374,7 @@ export default function SuperAdminUsersPage() {
                         <span className="font-mono text-[11px] text-[#2C1A1D] font-semibold">{autoPassword}</span>
                         <button
                           type="button"
-                          onClick={() => setAutoPassword(generatePassword())}
+                          onClick={() => setAutoPassword(generatePassword(nameInput))}
                           title="Generate ulang password"
                           className="p-1 rounded-lg text-[#A47E3B] hover:bg-[#C5A059]/20 transition-all cursor-pointer"
                         >

@@ -19,7 +19,7 @@ const db = drizzle(sql, { schema });
 async function main() {
   console.log("🌱 Memulai seeding database Neon PostgreSQL...");
 
-  // 1. Seed Super Admin User
+  // 1. Seed Super Admin & Admin Users
   const superPasswordHash = await bcrypt.hash("superadmin123", 10);
   await db
     .insert(schema.users)
@@ -27,6 +27,17 @@ async function main() {
       name: "Super Admin Platform",
       email: "superadmin@wedding.com",
       passwordHash: superPasswordHash,
+      role: "superadmin",
+    })
+    .onConflictDoNothing({ target: schema.users.email });
+
+  const adminPasswordHash = await bcrypt.hash("admin123", 10);
+  await db
+    .insert(schema.users)
+    .values({
+      name: "Admin Platform",
+      email: "admin@wedding.com",
+      passwordHash: adminPasswordHash,
       role: "superadmin",
     })
     .onConflictDoNothing({ target: schema.users.email });
@@ -44,7 +55,7 @@ async function main() {
     })
     .onConflictDoNothing({ target: schema.users.email });
 
-  console.log("✅ User Super Admin dibuat (superadmin@wedding.com / superadmin123)");
+  console.log("✅ User Super Admin dibuat (superadmin@wedding.com & admin@wedding.com)");
   console.log("✅ User Admin Mempelai dibuat (mempelai@wedding.com / mempelai123)");
 
   // 2. Seed Wedding Settings
@@ -197,20 +208,7 @@ async function main() {
     console.log("✅ Galeri Foto dibuat");
   }
 
-  // 7. Seed Sample Guests
-  const existingGuests = await db.select().from(schema.guests);
-  if (existingGuests.length === 0) {
-    const sampleGuests = [
-      { name: "Faza Mohamad", slug: "faza-mohamad", category: "Teman", phone: "081299990001" },
-      { name: "Ahmad Fauzan", slug: "ahmad-fauzan", category: "Keluarga", phone: "081299990002" },
-      { name: "Siti Rahma", slug: "siti-rahma", category: "Rekan Kerja", phone: "081299990003" },
-    ];
 
-    for (const g of sampleGuests) {
-      await db.insert(schema.guests).values(g).onConflictDoNothing({ target: schema.guests.slug });
-    }
-    console.log("✅ Tamu contoh dibuat (Faza Mohamad, Ahmad Fauzan, Siti Rahma)");
-  }
 
   console.log("🎉 Seeding database selesai!");
 }

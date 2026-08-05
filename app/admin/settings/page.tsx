@@ -3,11 +3,11 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
-import { Save, Heart, Calendar, CreditCard, Image as ImageIcon, Plus, Trash2, Upload } from "lucide-react";
+import { Save, Heart, Calendar, CreditCard, Image as ImageIcon, Plus, Trash2, Upload, Music } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function AdminSettingsPage() {
-  const [activeTab, setActiveTab] = useState<"pengantin" | "acara" | "rekening" | "galeri">("pengantin");
+  const [activeTab, setActiveTab] = useState<"pengantin" | "acara" | "rekening" | "galeri" | "musik">("pengantin");
 
   // Form states
   const [groomName, setGroomName] = useState("Ahmad");
@@ -62,6 +62,8 @@ export default function AdminSettingsPage() {
   const [heroPhotoUrl, setHeroPhotoUrl] = useState(
     "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop&q=80"
   );
+  const [musicUrl, setMusicUrl] = useState("/music/wedding.mp3");
+  const [uploadingMusic, setUploadingMusic] = useState(false);
 
   const [galleryItems, setGalleryItems] = useState<
     Array<{ id?: string; imageUrl: string; altText?: string }>
@@ -110,6 +112,7 @@ export default function AdminSettingsPage() {
             if (s.brideMother) setBrideMother(s.brideMother);
             if (s.bridePhotoUrl) setBridePhotoUrl(s.bridePhotoUrl);
             if (s.heroPhotoUrl) setHeroPhotoUrl(s.heroPhotoUrl);
+            if (s.musicUrl) setMusicUrl(s.musicUrl);
             if (s.weddingDate) setWeddingDate(s.weddingDate);
           }
           if (json.events && Array.isArray(json.events)) {
@@ -158,6 +161,7 @@ export default function AdminSettingsPage() {
             brideMother,
             bridePhotoUrl,
             heroPhotoUrl,
+            musicUrl,
             weddingDate,
           },
           events: [akadEvent, receptionEvent],
@@ -268,6 +272,7 @@ export default function AdminSettingsPage() {
           { id: "acara", label: "Acara & Lokasi", icon: Calendar },
           { id: "rekening", label: "Rekening Bank", icon: CreditCard },
           { id: "galeri", label: "Foto Galeri", icon: ImageIcon },
+          { id: "musik", label: "Musik Latar", icon: Music },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1004,6 +1009,79 @@ export default function AdminSettingsPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "musik" && (
+          <div className="space-y-6">
+            <div className="space-y-1 border-b border-[#C5A059]/20 pb-3">
+              <h3 className="font-serif text-xl font-bold text-[#2C1A1D]">
+                Musik Latar Belakang (Background Music)
+              </h3>
+              <p className="text-xs text-[#5C4649] font-light">
+                Unggah file audio MP3 sendiri atau masukkan URL musik pilihan Anda yang akan diputar otomatis saat tamu membuka undangan.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl border border-[#C5A059]/30 bg-[#FAF8F5] space-y-5">
+              {/* Upload File Input */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-[#2C1A1D] block">
+                  Unggah File Audio (Format MP3/Audio)
+                </label>
+                <div className="flex items-center gap-3">
+                  <label className="btn-gold py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-sm">
+                    <Upload className="w-4 h-4" />
+                    {uploadingMusic ? "Mengunggah MP3..." : "Pilih File Audio MP3"}
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      className="hidden"
+                      disabled={uploadingMusic}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setUploadingMusic(true);
+                          const url = await handleFileUpload(file);
+                          if (url) {
+                            setMusicUrl(url);
+                            toast.success("File musik berhasil diunggah!");
+                          } else {
+                            toast.error("Gagal mengunggah file musik");
+                          }
+                          setUploadingMusic(false);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Or Paste URL */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-[#2C1A1D]">
+                  Atau Masukkan URL Link Audio MP3
+                </label>
+                <input
+                  type="text"
+                  value={musicUrl}
+                  onChange={(e) => setMusicUrl(e.target.value)}
+                  className="w-full p-3 bg-white rounded-xl border border-[#C5A059]/30 text-xs focus:outline-none focus:border-[#C5A059] font-mono"
+                  placeholder="/music/wedding.mp3 atau https://domain.com/lagu.mp3"
+                />
+              </div>
+
+              {/* Audio Player Preview */}
+              {musicUrl && (
+                <div className="p-4 rounded-xl bg-white border border-[#C5A059]/20 space-y-2">
+                  <p className="text-xs font-semibold text-[#A47E3B] flex items-center gap-2">
+                    <Music className="w-4 h-4" />
+                    Pratinjau Musik Aktif:
+                  </p>
+                  <audio controls src={musicUrl} className="w-full h-10" />
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -13,12 +13,14 @@ import {
   ExternalLink,
   Smartphone,
   Eye,
+  EyeOff,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function RootPortalPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -57,7 +59,7 @@ export default function RootPortalPage() {
       <div className="w-full max-w-5xl bg-[#FAF8F5] rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 border border-[#C5A059]/30">
         
         {/* BAGIAN KIRI: Form Login Admin */}
-        <div className="lg:col-span-6 p-8 sm:p-12 flex flex-col justify-between space-y-8 bg-[#FFFDF9]">
+        <div className="lg:col-span-6 p-6 sm:p-12 flex flex-col justify-between space-y-8 bg-[#FFFDF9]">
           <div className="space-y-6">
             {/* Header Brand */}
             <div className="flex items-center gap-3">
@@ -75,7 +77,7 @@ export default function RootPortalPage() {
             </div>
 
             <div className="space-y-2 pt-2">
-              <h1 className="font-serif text-3xl font-bold text-[#2C1A1D]">
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#2C1A1D]">
                 Masuk ke Dashboard
               </h1>
               <p className="text-xs text-[#5C4649] font-light leading-relaxed">
@@ -109,13 +111,21 @@ export default function RootPortalPage() {
                 <div className="relative">
                   <Lock className="w-4 h-4 text-[#A47E3B] absolute left-4 top-1/2 -translate-y-1/2" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 bg-[#FAF8F5] rounded-xl border border-[#C5A059]/30 text-xs focus:outline-none focus:border-[#C5A059] transition-all text-[#2C1A1D]"
+                    className="w-full pl-11 pr-11 py-3.5 bg-[#FAF8F5] rounded-xl border border-[#C5A059]/30 text-xs focus:outline-none focus:border-[#C5A059] transition-all text-[#2C1A1D]"
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A47E3B] hover:text-[#2C1A1D] transition-colors p-1 cursor-pointer"
+                    title={showPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -136,12 +146,13 @@ export default function RootPortalPage() {
         </div>
 
         {/* BAGIAN KANAN: Preview & Demo Tampilan Undangan Digital */}
-        <div className="lg:col-span-6 bg-[#2C1A1D] text-white p-8 sm:p-12 flex flex-col justify-between space-y-8 relative overflow-hidden">
+        <div className="lg:col-span-6 bg-[#2C1A1D] text-white p-6 sm:p-12 flex flex-col justify-between space-y-6 relative overflow-hidden">
           {/* Background Ornaments */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 space-y-6">
+          {/* Informasi Detail hanya tampil di layar desktop (lg:block), tersembunyi di HP */}
+          <div className="relative z-10 space-y-6 hidden lg:block">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C5A059]/20 border border-[#C5A059]/30 text-[#E6C887] text-[11px] font-semibold">
               <Sparkles className="w-3.5 h-3.5" />
               Demo Tampilan Undangan
@@ -170,14 +181,14 @@ export default function RootPortalPage() {
             </div>
           </div>
 
-          {/* Tombol Demo Tampilan Undangan Publik */}
-          <div className="relative z-10 space-y-3 pt-4 border-t border-[#C5A059]/20">
+          {/* Tombol Demo Tampilan Undangan Publik (Tampil di HP & Desktop) */}
+          <div className="relative z-10 space-y-3 pt-2 lg:pt-4 border-t border-[#C5A059]/20">
             <p className="text-xs font-semibold text-[#E6C887]">
               Demo Tampilan Undangan Tamu:
             </p>
 
             <Link
-              href="/invite/faza-mohamad"
+              href="/invite/demo"
               target="_blank"
               className="w-full p-4 rounded-2xl bg-[#C5A059] hover:bg-[#b08c47] text-white flex items-center justify-between text-xs font-semibold shadow-lg transition-all group cursor-pointer"
             >

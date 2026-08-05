@@ -43,6 +43,7 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
       bridePhotoUrl?: string;
       weddingDate: string;
       heroPhotoUrl?: string;
+      musicUrl?: string | null;
       quoteText?: string;
       giftRecipient?: string;
       giftPhone?: string;
@@ -121,7 +122,11 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
   return (
     <main className="relative min-h-[100dvh] w-full max-w-md mx-auto bg-[#FDFBF7] shadow-2xl overflow-hidden font-sans">
       {isLoadingScreen && (
-        <LoadingScreen onFinish={() => setIsLoadingScreen(false)} />
+        <LoadingScreen
+          groomName={data.settings.groomName}
+          brideName={data.settings.brideName}
+          onFinish={() => setIsLoadingScreen(false)}
+        />
       )}
 
       {!isCoverOpen && (
@@ -133,7 +138,7 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
         />
       )}
 
-      <MusicPlayer isPlaying={isCoverOpen} />
+      <MusicPlayer isPlaying={isCoverOpen} musicUrl={data.settings.musicUrl} />
 
       <div
         className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${
