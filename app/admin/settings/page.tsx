@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { Save, Heart, Calendar, CreditCard, Image as ImageIcon, Plus, Trash2, Upload } from "lucide-react";
 import toast from "react-hot-toast";
