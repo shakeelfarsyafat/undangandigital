@@ -11,6 +11,19 @@ import {
   getLoveStories,
   updateLoveStories,
 } from "@/lib/data-store";
+import { getAdminSession } from "@/lib/auth";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
+// Helper: ambil nama depan (kata pertama) lalu slug-ify
+function firstNameSlug(fullName: string): string {
+  return fullName
+    .trim()
+    .split(/\s+/)[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
 
 export async function GET() {
   try {
@@ -51,6 +64,41 @@ export async function POST(request: Request) {
         heroPhotoUrl: body.heroPhotoUrl,
         weddingDate: body.weddingDate,
       });
+    }
+
+    // Auto-update weddingSlug di tabel users berdasarkan nama depan mempelai
+    const groomName = body.groomName || body.settings?.groomName;
+    const brideName = body.brideName || body.settings?.brideName;
+
+    if (groomName && brideName) {
+      try {
+        const session = await getAdminSession();
+        if (session?.userId) {
+          const groomSlug = firstNameSlug(groomName);
+          const brideSlug = firstNameSlug(brideName);
+          if (groomSlug && brideSlug) {
+            let newSlug = `${groomSlug}-${brideSlug}`;
+
+            // Cek apakah slug sudah dipakai akun lain
+            const existing = await db
+              .select()
+              .from(users)
+              .where(eq(users.weddingSlug, newSlug))
+              .limit(1);
+
+            if (existing.length > 0 && existing[0].id !== session.userId) {
+              newSlug = `${newSlug}-${Date.now().toString().slice(-4)}`;
+            }
+
+            await db
+              .update(users)
+              .set({ weddingSlug: newSlug })
+              .where(eq(users.id, session.userId));
+          }
+        }
+      } catch {
+        // Jika gagal update slug, tetap lanjutkan — tidak critical
+      }
     }
 
     if (body.events && Array.isArray(body.events)) {

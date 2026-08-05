@@ -39,17 +39,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email sudah terdaftar" }, { status: 400 });
     }
 
-    // Process Slug
-    let slug = weddingSlug ? weddingSlug.toLowerCase().trim().replace(/[^a-z0-9-]/g, "") : "";
-    if (!slug) {
-      slug = name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
-    }
-
-    // Check existing slug
-    if (slug) {
-      const existingSlug = await db.select().from(schema.users).where(eq(schema.users.weddingSlug, slug)).limit(1);
-      if (existingSlug.length > 0) {
-        slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    // Process Slug — kosongkan dulu jika tidak diisi, akan diisi dari Data Mempelai
+    let slug: string | null = null;
+    if (weddingSlug && weddingSlug.trim()) {
+      slug = weddingSlug.toLowerCase().trim().replace(/[^a-z0-9-]/g, "");
+      // Check existing slug
+      if (slug) {
+        const existingSlug = await db.select().from(schema.users).where(eq(schema.users.weddingSlug, slug)).limit(1);
+        if (existingSlug.length > 0) {
+          slug = `${slug}-${Date.now().toString().slice(-4)}`;
+        }
       }
     }
 
