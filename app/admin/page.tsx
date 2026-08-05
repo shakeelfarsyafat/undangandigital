@@ -12,6 +12,8 @@ import {
   Clock,
   UserCheck,
   Sparkles,
+  ShieldCheck,
+  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -25,17 +27,41 @@ interface Stats {
   estimatedAttendees: number;
 }
 
+interface AccountStats {
+  totalAccounts: number;
+}
+
 export default function AdminDashboardPage() {
+  const [role, setRole] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [accountStats, setAccountStats] = useState<AccountStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStats() {
+    async function load() {
       try {
-        const res = await fetch("/api/admin/stats");
-        if (res.ok) {
-          const json = await res.json();
-          setStats(json.stats);
+        // Cek role terlebih dahulu
+        const meRes = await fetch("/api/auth/me");
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          const userRole = meData.user?.role || null;
+          setRole(userRole);
+
+          if (userRole === "superadmin") {
+            // Muat statistik akun
+            const usersRes = await fetch("/api/admin/users");
+            if (usersRes.ok) {
+              const usersData = await usersRes.json();
+              setAccountStats({ totalAccounts: usersData.users?.length ?? 0 });
+            }
+          } else {
+            // Muat statistik undangan
+            const statsRes = await fetch("/api/admin/stats");
+            if (statsRes.ok) {
+              const json = await statsRes.json();
+              setStats(json.stats);
+            }
+          }
         }
       } catch {
         // fallback
@@ -43,9 +69,94 @@ export default function AdminDashboardPage() {
         setIsLoading(false);
       }
     }
-    loadStats();
+    load();
   }, []);
 
+  // === Tampilan Super Admin ===
+  if (role === "superadmin") {
+    return (
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#C5A059]/20 pb-6">
+          <div>
+            <h1 className="font-serif text-3xl font-bold text-[#2C1A1D]">
+              Dashboard Super Admin
+            </h1>
+            <p className="text-xs text-[#5C4649] font-light mt-1">
+              Ringkasan platform undangan digital — kelola akun admin mempelai.
+            </p>
+          </div>
+          <Link
+            href="/admin/users"
+            className="btn-gold py-2.5 px-5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-md shrink-0"
+          >
+            <UserPlus className="w-4 h-4" />
+            + Tambah Akun Mempelai
+          </Link>
+        </div>
+
+        {/* Stat Cards */}
+        {isLoading ? (
+          <div className="text-xs text-[#5C4649] py-10 text-center">Memuat data...</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="p-6 rounded-2xl border border-[#C5A059]/30 bg-[#F5EFE6] shadow-sm flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-wider font-semibold text-[#A47E3B] opacity-80">
+                  Total Akun Mempelai
+                </p>
+                <p className="font-serif text-4xl font-bold text-[#A47E3B]">
+                  {accountStats?.totalAccounts ?? 0}
+                </p>
+              </div>
+              <div className="p-3 rounded-xl bg-white/60 shadow-inner text-[#A47E3B]">
+                <Users className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl border border-[#C5A059]/30 bg-white shadow-sm flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-wider font-semibold text-[#5C4649] opacity-80">
+                  Role Platform
+                </p>
+                <p className="font-serif text-lg font-bold text-[#2C1A1D]">
+                  Super Administrator
+                </p>
+                <p className="text-[11px] text-[#A47E3B] font-medium">
+                  Akses penuh ke manajemen akun
+                </p>
+              </div>
+              <div className="p-3 rounded-xl bg-[#C5A059]/10 shadow-inner text-[#A47E3B]">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Quick Action */}
+        <div className="grid grid-cols-1 gap-5 pt-2">
+          <Link
+            href="/admin/users"
+            className="glass-card p-6 rounded-2xl hover:border-[#C5A059] transition-all flex items-center gap-5 group shadow-md"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#C5A059]/20 text-[#A47E3B] flex items-center justify-center shrink-0">
+              <UserCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-serif font-bold text-lg text-[#2C1A1D] group-hover:text-[#C5A059] transition-colors">
+                Kelola Akun Mempelai
+              </h3>
+              <p className="text-xs text-[#5C4649] font-light mt-0.5">
+                Buat akun baru, atur wedding slug, reset password, dan hapus akun mempelai.
+              </p>
+            </div>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // === Tampilan Admin Mempelai ===
   const statCards = [
     { label: "Total Undangan", value: stats?.totalGuests ?? 0, icon: Users, color: "bg-blue-50 text-blue-700 border-blue-200" },
     { label: "Sudah Dibuka", value: stats?.opened ?? 0, icon: Eye, color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
@@ -68,7 +179,6 @@ export default function AdminDashboardPage() {
             Ringkasan status undangan, keterbukaan link, dan estimasi kehadiran tamu.
           </p>
         </div>
-
         <Link
           href="/admin/guests"
           className="btn-gold py-2.5 px-5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-md shrink-0"
@@ -125,7 +235,7 @@ export default function AdminDashboardPage() {
         </Link>
 
         <Link
-          href="/admin/rsvp"
+          href="/admin/guests?tab=rsvp"
           className="glass-card p-6 rounded-2xl hover:border-[#C5A059] transition-all space-y-2 group shadow-md"
         >
           <div className="w-10 h-10 rounded-full bg-[#C5A059]/20 text-[#A47E3B] flex items-center justify-center font-bold">

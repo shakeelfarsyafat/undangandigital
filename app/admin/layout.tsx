@@ -29,8 +29,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         const role = data.user?.role || null;
         setUserRole(role);
 
-        // Superadmin hanya boleh akses /admin/users
-        if (role === "superadmin" && !pathname.startsWith("/admin/users")) {
+        // Superadmin hanya boleh akses /admin (dashboard) dan /admin/users
+        if (role === "superadmin" && pathname !== "/admin" && !pathname.startsWith("/admin/users")) {
           router.replace("/admin/users");
           return;
         }

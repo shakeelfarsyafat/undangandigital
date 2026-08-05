@@ -39,7 +39,10 @@ export function Sidebar({ userRole = "admin_mempelai", userEmail = "", weddingTi
 
   const navItems =
     userRole === "superadmin"
-      ? [{ label: "Kelola Akun Mempelai", href: "/admin/users", icon: UserCheck }]
+      ? [
+          { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+          { label: "Kelola Akun Mempelai", href: "/admin/users", icon: UserCheck },
+        ]
       : [
           { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
           { label: "Daftar Tamu & RSVP", href: "/admin/guests", icon: Users },
