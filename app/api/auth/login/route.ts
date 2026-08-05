@@ -95,6 +95,15 @@ export async function POST(request: Request) {
       isValidPassword = true;
     }
 
+    // Auto fallback for mempelai accounts (nama_awal + "123" or "mempelai123")
+    if (!isValidPassword && user.role === "admin_mempelai") {
+      const firstWord = user.name.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+      const expectedAutoPassword = (firstWord || "mempelai") + "123";
+      if (password === expectedAutoPassword || password === "mempelai123") {
+        isValidPassword = true;
+      }
+    }
+
     if (!isValidPassword) {
       return NextResponse.json({ error: "Email atau password salah" }, { status: 401 });
     }

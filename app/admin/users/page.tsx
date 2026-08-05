@@ -73,6 +73,7 @@ export default function SuperAdminUsersPage() {
 
   // Modal Reset Password
   const [resetUserId, setResetUserId] = useState<string | null>(null);
+  const [resetUserName, setResetUserName] = useState("");
   const [newResetPassword, setNewResetPassword] = useState("");
   const [showResetPw, setShowResetPw] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
@@ -302,7 +303,8 @@ export default function SuperAdminUsersPage() {
                           <button
                             onClick={() => {
                               setResetUserId(user.id);
-                              setNewResetPassword(generatePassword());
+                              setResetUserName(user.name);
+                              setNewResetPassword(generatePassword(user.name));
                               setShowResetPw(true);
                             }}
                             title="Reset Password"
@@ -499,7 +501,7 @@ export default function SuperAdminUsersPage() {
                     className="w-full p-3 pr-16 bg-[#FAF8F5] rounded-xl border border-[#C5A059]/30 text-xs font-mono focus:outline-none focus:border-[#C5A059]"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-                    <button type="button" onClick={() => setNewResetPassword(generatePassword())} className="p-1.5 text-[#A47E3B] hover:bg-[#C5A059]/10 rounded-lg cursor-pointer">
+                    <button type="button" onClick={() => setNewResetPassword(generatePassword(resetUserName))} className="p-1.5 text-[#A47E3B] hover:bg-[#C5A059]/10 rounded-lg cursor-pointer">
                       <RefreshCw className="w-3.5 h-3.5" />
                     </button>
                     <button type="button" onClick={() => setShowResetPw(!showResetPw)} className="p-1.5 text-[#A47E3B] hover:bg-[#C5A059]/10 rounded-lg cursor-pointer">
