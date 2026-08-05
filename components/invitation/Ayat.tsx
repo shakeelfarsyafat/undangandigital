@@ -9,14 +9,15 @@ export function Ayat() {
       {/* Dark Batik Texture Background */}
       <div className="absolute inset-0 bg-batik-pattern opacity-10" />
 
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem] opacity-90" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="max-w-md w-full my-auto glass-card-jawa-dark p-6 sm:p-8 rounded-3xl relative shadow-2xl border border-[#D4AF37]/50 overflow-hidden flex flex-col items-center justify-center space-y-3"
+        className="max-w-md w-full my-auto glass-card-jawa-dark p-6 sm:p-8 rounded-3xl relative z-20 shadow-2xl border border-[#D4AF37]/50 overflow-hidden flex flex-col items-center justify-center space-y-3"
       >
-        <JavaneseBottomCorners className="w-24 h-24 sm:w-32 sm:h-32 opacity-90" />
 
         <GununganWhite className="w-[28vw] max-w-[130px] h-[16vh] max-h-[150px]" />
 

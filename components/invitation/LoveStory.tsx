@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { JavaneseDivider } from "./JavaneseOrnaments";
+import { JavaneseDivider, JavaneseBottomCorners } from "./JavaneseOrnaments";
 
 interface Story {
   id: string;
@@ -15,8 +15,9 @@ export function LoveStory({ stories }: { stories: Story[] }) {
   if (!stories || stories.length === 0) return null;
 
   return (
-    <section className="py-20 px-6 bg-[#F7F2E7] text-center">
-      <div className="max-w-lg mx-auto">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-16 px-6 bg-[#F7F2E7] text-center snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <div className="max-w-lg mx-auto relative z-20 my-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -25,10 +26,10 @@ export function LoveStory({ stories }: { stories: Story[] }) {
           className="mb-12 space-y-2"
         >
           <p className="text-[11px] uppercase tracking-[0.35em] text-[#8B6508] font-semibold">
-            Titisan Katresnan
+            Kisah Cinta
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl text-[#1E100A] font-bold">
-            Our Love Story
+            Kisah Cinta Kami
           </h2>
           <JavaneseDivider className="w-44 h-8" />
         </motion.div>

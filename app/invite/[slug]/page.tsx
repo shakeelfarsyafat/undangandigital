@@ -10,9 +10,7 @@ import { Ayat } from "@/components/invitation/Ayat";
 import { Couple } from "@/components/invitation/Couple";
 import { LoveStory } from "@/components/invitation/LoveStory";
 import { SaveTheDate } from "@/components/invitation/SaveTheDate";
-import { Countdown } from "@/components/invitation/Countdown";
 import { LocationMap } from "@/components/invitation/LocationMap";
-import { Gallery } from "@/components/invitation/Gallery";
 import { WeddingGift } from "@/components/invitation/WeddingGift";
 import { RSVPForm } from "@/components/invitation/RSVPForm";
 import { WishesSection } from "@/components/invitation/WishesSection";
@@ -156,21 +154,15 @@ export default function InvitationPage({ params }: PageProps) {
 
         <SaveTheDate events={data.events} />
 
-        <Countdown targetDate={`${data.settings.weddingDate}T08:00:00`} />
-
         <LocationMap
+          targetDate={`${data.settings.weddingDate}T08:00:00`}
           venueName={data.events[0]?.venueName}
           venueAddress={data.events[0]?.venueAddress}
           mapsUrl={data.events[0]?.mapsUrl}
         />
 
-        <Gallery items={data.gallery} />
-
         <WeddingGift
           banks={data.banks}
-          recipient={data.settings.giftRecipient}
-          phone={data.settings.giftPhone}
-          address={data.settings.giftAddress}
         />
 
         <RSVPForm guestId={data.guest.id} guestName={data.guest.name} />

@@ -32,8 +32,9 @@ interface Settings {
 
 export function Couple({ settings }: { settings: Settings }) {
   return (
-    <section className="min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start">
-      <div className="max-w-xl w-full my-auto space-y-4 sm:space-y-6">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <div className="max-w-xl w-full my-auto space-y-4 sm:space-y-6 relative z-20">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -44,7 +45,7 @@ export function Couple({ settings }: { settings: Settings }) {
         >
           <GununganHeader className="w-[24vw] max-w-[110px] h-[12vh] max-h-[120px]" />
           <p className="text-[10px] uppercase tracking-[0.35em] text-[#8B6508] font-bold">
-            Sugeng Rawuh
+            Selamat Datang
           </p>
           <h2 className="font-serif text-2xl sm:text-4xl text-[#3E2211] font-bold">
             Mempelai Pengantin
@@ -62,7 +63,6 @@ export function Couple({ settings }: { settings: Settings }) {
             viewport={{ once: true }}
             className="glass-card-parchment p-3 sm:p-6 rounded-2xl space-y-2 shadow-lg border border-[#C5A059]/40 flex flex-col items-center relative overflow-hidden"
           >
-            <JavaneseBottomCorners className="w-16 h-16 sm:w-28 sm:h-28" />
 
             <div className="relative w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-3 border-[#C5A059] shadow-md">
               <Image
@@ -78,12 +78,12 @@ export function Couple({ settings }: { settings: Settings }) {
                 {settings.groomFullName}
               </h3>
               <p className="text-[9px] sm:text-xs text-[#8B6508] font-bold uppercase tracking-wider">
-                Mempelai Kakung
+                Mempelai Pria
               </p>
             </div>
 
             <p className="text-[10px] sm:text-xs text-[#5C3A21] leading-tight">
-              Putra saking: <br />
+              Putra dari: <br />
               <span className="font-semibold text-[#3E2211]">{settings.groomFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.groomMother}</span>
             </p>
 
@@ -108,7 +108,6 @@ export function Couple({ settings }: { settings: Settings }) {
             viewport={{ once: true }}
             className="glass-card-parchment p-3 sm:p-6 rounded-2xl space-y-2 shadow-lg border border-[#C5A059]/40 flex flex-col items-center relative overflow-hidden"
           >
-            <JavaneseBottomCorners className="w-16 h-16 sm:w-28 sm:h-28" />
 
             <div className="relative w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-3 border-[#C5A059] shadow-md">
               <Image
@@ -124,12 +123,12 @@ export function Couple({ settings }: { settings: Settings }) {
                 {settings.brideFullName}
               </h3>
               <p className="text-[9px] sm:text-xs text-[#8B6508] font-bold uppercase tracking-wider">
-                Mempelai Putri
+                Mempelai Wanita
               </p>
             </div>
 
             <p className="text-[10px] sm:text-xs text-[#5C3A21] leading-tight">
-              Putri saking: <br />
+              Putri dari: <br />
               <span className="font-semibold text-[#3E2211]">{settings.brideFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.brideMother}</span>
             </p>
 

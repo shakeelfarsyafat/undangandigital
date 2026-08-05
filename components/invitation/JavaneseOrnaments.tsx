@@ -82,7 +82,7 @@ export function MegamendungCloud({ className = "w-36 h-24 sm:w-48 sm:h-32" }: { 
 
 export function JavaneseCorner({
   position = "bottom-left",
-  className = "w-28 h-28 sm:w-40 sm:h-40",
+  className = "w-96 h-96 sm:w-[36rem] sm:h-[36rem]",
 }: {
   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   className?: string;
@@ -118,7 +118,7 @@ export function JavaneseCorner({
   );
 }
 
-export function JavaneseBottomCorners({ className = "w-32 h-32 sm:w-44 sm:h-44" }: { className?: string }) {
+export function JavaneseBottomCorners({ className = "w-96 h-96 sm:w-[36rem] sm:h-[36rem]" }: { className?: string }) {
   return (
     <>
       <JavaneseCorner position="bottom-left" className={className} />

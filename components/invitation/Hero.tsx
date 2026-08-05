@@ -22,7 +22,7 @@ export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
       </div>
 
       {/* Bottom Corner Ornaments */}
-      <JavaneseBottomCorners className="w-24 h-24 sm:w-36 sm:h-36" />
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -35,7 +35,7 @@ export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
         <GununganHeader className="w-[30vw] max-w-[140px] h-[16vh] max-h-[160px]" />
 
         <p className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#8B6508] font-bold">
-          Pawiwahan Ageng
+          Pernikahan
         </p>
 
         {/* Hero Arch Image (Fit 30vh max height for 100dvh mobile) */}
@@ -48,7 +48,7 @@ export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
         >
           <Image
             src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop&q=80"
-            alt="Hero Couple Jawa"
+            alt="Foto Pengantin"
             fill
             priority
             className="object-cover object-center filter saturate-[0.95]"
@@ -68,12 +68,12 @@ export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
 
         {/* Date */}
         <p className="text-[10px] sm:text-xs font-semibold text-[#5C3A21] tracking-widest uppercase py-1 border-y border-[#C5A059]/40 inline-block px-6">
-          Minggu Pahing, {weddingDate}
+          Minggu, {weddingDate}
         </p>
 
         {/* Javanese Blessing Quote */}
         <p className="text-[11px] sm:text-xs italic text-[#5C3A21] leading-relaxed max-w-xs mx-auto font-light">
-          &ldquo;Mugi-mugi Allah maringi berkah lan katentreman ing kulawarga ingkang tinangsul ing katresnan.&rdquo;
+          &ldquo;Semoga Allah SWT memberikan keberkahan dan ketenteraman dalam keluarga yang dipersatukan dalam cinta kasih.&rdquo;
         </p>
       </motion.div>
     </section>

@@ -34,15 +34,15 @@ export function Countdown({ targetDate = "2026-12-20T08:00:00" }: { targetDate?:
   }, [targetDate]);
 
   return (
-    <section className="min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="max-w-md w-full my-auto glass-card-parchment p-6 sm:p-8 rounded-3xl shadow-xl space-y-4 relative overflow-hidden border border-[#C5A059]/40"
+        className="max-w-md w-full my-auto glass-card-parchment p-6 sm:p-8 rounded-3xl shadow-xl space-y-4 relative z-20 overflow-hidden border border-[#C5A059]/40"
       >
-        <JavaneseBottomCorners className="w-24 h-24 sm:w-32 sm:h-32" />
 
         <p className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#8B6508] font-bold">
           Etangan Wektu Bahagia

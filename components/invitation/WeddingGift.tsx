@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { CreditCard, Copy, Gift, MapPin, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import { GununganHeader, JavaneseDivider, JavaneseCorner } from "./JavaneseOrnaments";
+import { GununganHeader, JavaneseDivider, JavaneseBottomCorners } from "./JavaneseOrnaments";
 
 interface BankAccount {
   id: string;
@@ -39,8 +39,9 @@ export function WeddingGift({ banks, recipient, phone, address }: GiftProps) {
   };
 
   return (
-    <section className="py-20 px-6 bg-[#FDFBF7] text-center bg-batik-pattern">
-      <div className="max-w-xl mx-auto space-y-12">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-16 px-6 bg-[#FDFBF7] text-center bg-batik-pattern snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <div className="max-w-xl mx-auto space-y-12 relative z-20 my-auto w-full">
         {/* Wedding Gift Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,13 +52,13 @@ export function WeddingGift({ banks, recipient, phone, address }: GiftProps) {
         >
           <GununganHeader className="w-16 h-24" />
           <p className="text-[11px] uppercase tracking-[0.35em] text-[#8B6508] font-semibold">
-            Tandha Katresnan
+            Tanda Kasih
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl text-[#1E100A] font-bold">
-            Wedding Gift
+            Hadiah Pernikahan
           </h2>
           <p className="text-xs text-[#4A2B18] leading-relaxed max-w-md mx-auto font-light">
-            Donga pangestu panjenengan minangka nugraha ingkang wigati sanget kagem kula panjenengan. Menawi bade maringi kado tanda katresnan saget lumantar:
+            Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Apabila ingin memberikan hadiah pernikahan dapat melalui:
           </p>
           <JavaneseDivider className="w-48 h-8" />
         </motion.div>
@@ -73,8 +74,6 @@ export function WeddingGift({ banks, recipient, phone, address }: GiftProps) {
               viewport={{ once: true }}
               className="glass-card-jawa p-6 rounded-3xl space-y-4 shadow-xl border border-[#D4AF37]/30 flex flex-col justify-between relative overflow-hidden text-left"
             >
-              <JavaneseCorner position="top-left" />
-              <JavaneseCorner position="top-right" />
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -112,53 +111,6 @@ export function WeddingGift({ banks, recipient, phone, address }: GiftProps) {
             </motion.div>
           ))}
         </div>
-
-        {/* Kirim Hadiah Fisik Card */}
-        {address && (
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="glass-card-jawa p-6 sm:p-8 rounded-3xl space-y-4 shadow-xl border border-[#D4AF37]/30 text-left relative overflow-hidden"
-          >
-            <JavaneseCorner position="top-left" />
-            <JavaneseCorner position="top-right" />
-
-            <div className="flex items-center gap-2 text-[#D4AF37]">
-              <MapPin className="w-5 h-5" />
-              <h3 className="font-serif text-xl font-bold text-[#1E100A]">
-                Kirim Hadiah Fisik
-              </h3>
-            </div>
-
-            <div className="space-y-1 text-xs text-[#4A2B18]">
-              <p>Penerima: <span className="font-semibold text-[#1E100A]">{recipient || "Ahmad & Nabila"}</span></p>
-              {phone && <p>Telepon: <span className="font-medium text-[#1E100A]">{phone}</span></p>}
-              <p className="pt-1">Alamat Pengiriman:</p>
-              <p className="p-3 bg-[#FDFBF7] rounded-xl border border-[#D4AF37]/40 text-[#1E100A] font-medium leading-relaxed">
-                {address}
-              </p>
-            </div>
-
-            <button
-              onClick={() => copyAddressToClipboard(`${recipient ? recipient + " - " : ""}${address}`)}
-              className="w-full btn-jawa-gold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
-            >
-              {copiedAddress ? (
-                <>
-                  <Check className="w-4 h-4 text-[#1E100A]" />
-                  Alamat Berhasil Disalin
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  Salin Alamat Hadiah
-                </>
-              )}
-            </button>
-          </motion.div>
-        )}
       </div>
     </section>
   );

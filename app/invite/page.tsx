@@ -9,9 +9,7 @@ import { Ayat } from "@/components/invitation/Ayat";
 import { Couple } from "@/components/invitation/Couple";
 import { LoveStory } from "@/components/invitation/LoveStory";
 import { SaveTheDate } from "@/components/invitation/SaveTheDate";
-import { Countdown } from "@/components/invitation/Countdown";
 import { LocationMap } from "@/components/invitation/LocationMap";
-import { Gallery } from "@/components/invitation/Gallery";
 import { WeddingGift } from "@/components/invitation/WeddingGift";
 import { RSVPForm } from "@/components/invitation/RSVPForm";
 import { WishesSection } from "@/components/invitation/WishesSection";
@@ -194,21 +192,15 @@ export default function GeneralInvitationPage() {
 
         <SaveTheDate events={defaultData.events} />
 
-        <Countdown targetDate={`${defaultData.settings.weddingDate}T08:00:00`} />
-
         <LocationMap
+          targetDate={`${defaultData.settings.weddingDate}T08:00:00`}
           venueName={defaultData.events[0]?.venueName}
           venueAddress={defaultData.events[0]?.venueAddress}
           mapsUrl={defaultData.events[0]?.mapsUrl}
         />
 
-        <Gallery items={defaultData.gallery} />
-
         <WeddingGift
           banks={defaultData.banks}
-          recipient={defaultData.settings.giftRecipient}
-          phone={defaultData.settings.giftPhone}
-          address={defaultData.settings.giftAddress}
         />
 
         <RSVPForm guestId={defaultData.guest.id} guestName={defaultData.guest.name} />

@@ -47,8 +47,9 @@ END:VCALENDAR`;
   };
 
   return (
-    <section className="min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start">
-      <div className="max-w-xl w-full my-auto space-y-4 sm:space-y-6">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center bg-gold-dots snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <div className="max-w-xl w-full my-auto space-y-4 sm:space-y-6 relative z-20">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -58,10 +59,10 @@ END:VCALENDAR`;
         >
           <GununganHeader className="w-[24vw] max-w-[110px] h-[12vh] max-h-[120px]" />
           <p className="text-[10px] uppercase tracking-[0.35em] text-[#8B6508] font-bold">
-            Rantaman Acara
+            Rangkaian Acara
           </p>
           <h2 className="font-serif text-2xl sm:text-4xl text-[#3E2211] font-bold">
-            Save The Date
+            Jadwal Acara
           </h2>
           <JavaneseDivider className="w-36 h-6 sm:w-56 sm:h-10" />
         </motion.div>
@@ -77,7 +78,6 @@ END:VCALENDAR`;
               viewport={{ once: true }}
               className="glass-card-parchment p-4 sm:p-6 rounded-2xl space-y-3 shadow-lg border border-[#C5A059]/40 flex flex-col justify-between relative overflow-hidden text-left"
             >
-              <JavaneseBottomCorners className="w-16 h-16 sm:w-28 sm:h-28" />
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2">

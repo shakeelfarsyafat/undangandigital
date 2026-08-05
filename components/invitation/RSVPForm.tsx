@@ -41,7 +41,7 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
         throw new Error(data.error || "Gagal mengirim RSVP");
       }
 
-      toast.success("Matur nuwun! Konfirmasi rawuh berhasil dikirim.");
+      toast.success("Terima kasih! Konfirmasi kehadiran berhasil dikirim.");
       setIsSubmitted(true);
       if (onSubmitted) onSubmitted();
     } catch (error: unknown) {
@@ -53,8 +53,9 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
   };
 
   return (
-    <section className="min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center snap-start">
-      <div className="max-w-md w-full my-auto">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FAF5EB] text-center snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <div className="max-w-md w-full my-auto relative z-20">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -62,12 +63,11 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
           viewport={{ once: true }}
           className="glass-card-parchment p-5 sm:p-7 rounded-3xl space-y-4 shadow-xl border border-[#C5A059]/40 text-left relative overflow-hidden"
         >
-          <JavaneseBottomCorners className="w-20 h-20 sm:w-28 sm:h-28" />
 
           <div className="text-center space-y-1">
             <GununganHeader className="w-[20vw] max-w-[90px] h-[10vh] max-h-[100px] mx-auto" />
             <p className="text-[10px] uppercase tracking-[0.35em] text-[#8B6508] font-bold">
-              Konfirmasi Rawuh
+              Konfirmasi Kehadiran
             </p>
             <h2 className="font-serif text-2xl font-bold text-[#3E2211]">
               RSVP
@@ -91,7 +91,7 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Rawuh
+                Hadir
               </button>
 
               <button
@@ -104,7 +104,7 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
                 }`}
               >
                 <XCircle className="w-3.5 h-3.5" />
-                Pangapunten
+                Tidak Hadir
               </button>
             </div>
 
@@ -113,7 +113,7 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
               <div className="space-y-1">
                 <label className="text-[11px] font-semibold text-[#3E2211] flex items-center gap-1">
                   <Users className="w-3.5 h-3.5 text-[#C5A059]" />
-                  Cacahipun Tamu Rawuh
+                  Jumlah Tamu Hadir
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[1, 2].map((num) => (
@@ -127,7 +127,7 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
                           : "bg-[#FAF5EB] text-[#5C3A21] border-[#C5A059]/40"
                       }`}
                     >
-                      {num} Tiang
+                      {num} Orang
                     </button>
                   ))}
                 </div>
@@ -138,13 +138,13 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
             <div className="space-y-1">
               <label className="text-[11px] font-semibold text-[#3E2211] flex items-center gap-1">
                 <MessageSquare className="w-3.5 h-3.5 text-[#C5A059]" />
-                Atur Donga Pangestu
+                Ucapan & Doa Restu
               </label>
               <textarea
                 rows={3}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Serataken donga lan pangestu..."
+                placeholder="Tuliskan ucapan dan doa restu..."
                 className="w-full p-2.5 bg-[#FAF5EB] rounded-xl border border-[#C5A059]/40 text-xs text-[#3E2211] focus:outline-none focus:border-[#C5A059] resize-none"
               />
             </div>
@@ -156,7 +156,7 @@ export function RSVPForm({ guestId, guestName, onSubmitted }: RSVPFormProps) {
               className="w-full btn-jawa-gold py-3 px-5 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold shadow-md cursor-pointer disabled:opacity-50"
             >
               <Send className="w-3.5 h-3.5" />
-              {isSubmitting ? "Ngemut..." : isSubmitted ? "Update Konfirmasi" : "Kirim Konfirmasi Rawuh"}
+              {isSubmitting ? "Mengirim..." : isSubmitted ? "Perbarui Konfirmasi" : "Kirim Konfirmasi Kehadiran"}
             </button>
           </form>
         </motion.div>

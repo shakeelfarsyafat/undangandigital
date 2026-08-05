@@ -22,7 +22,7 @@ export function Cover({ guestName, groomName, brideName, onOpen }: CoverProps) {
     >
       {/* Background Vintage Parchment Overlay */}
       <div className="absolute inset-3 sm:inset-5 z-0 rounded-3xl border-2 border-[#C5A059]/40 bg-[#FAF5EB]/90 shadow-2xl backdrop-blur-sm pointer-events-none overflow-hidden">
-        <JavaneseBottomCorners className="w-24 h-24 sm:w-36 sm:h-36" />
+        <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
       </div>
 
       {/* Megamendung Clouds Left & Right */}
@@ -75,7 +75,7 @@ export function Cover({ guestName, groomName, brideName, onOpen }: CoverProps) {
             {groomName} <span className="font-script text-2xl sm:text-4xl text-[#C5A059]">&</span> {brideName}
           </h1>
           <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-[#8B6508] font-bold pt-0.5">
-            Save The Date
+            Undangan Pernikahan
           </p>
         </div>
 
@@ -84,7 +84,7 @@ export function Cover({ guestName, groomName, brideName, onOpen }: CoverProps) {
         {/* Guest Greeting Section */}
         <div className="pt-1 space-y-0.5 text-[#3E2211]">
           <p className="text-[11px] text-[#5C3A21] font-medium">
-            Kepada Yth;
+            Kepada Yth.
           </p>
           <p className="text-[11px] text-[#5C3A21] font-light">
             Bapak/Ibu/Saudara/i
@@ -113,7 +113,7 @@ export function Cover({ guestName, groomName, brideName, onOpen }: CoverProps) {
         transition={{ duration: 0.8, delay: 0.6 }}
         className="relative z-20 text-[9px] sm:text-[10px] text-[#8B6508] tracking-[0.25em] uppercase font-bold mb-1"
       >
-        Pawiwahan Ageng
+        Acara Pernikahan
       </motion.div>
     </motion.div>
   );

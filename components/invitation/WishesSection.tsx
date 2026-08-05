@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { formatRelativeTime } from "@/lib/utils";
-import { GununganHeader, JavaneseDivider } from "./JavaneseOrnaments";
+import { GununganHeader, JavaneseDivider, JavaneseBottomCorners } from "./JavaneseOrnaments";
 
 interface Wish {
   id: string;
@@ -38,8 +38,9 @@ export function WishesSection() {
   }, [fetchWishes]);
 
   return (
-    <section className="py-20 px-6 bg-[#FDFBF7] text-center bg-batik-pattern">
-      <div className="max-w-md mx-auto space-y-8">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-16 px-6 bg-[#FDFBF7] text-center bg-batik-pattern snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
+      <div className="max-w-md mx-auto space-y-8 relative z-20 my-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -49,10 +50,10 @@ export function WishesSection() {
         >
           <GununganHeader className="w-16 h-24" />
           <p className="text-[11px] uppercase tracking-[0.35em] text-[#8B6508] font-semibold">
-            Donga Lan Pangestu
+            Doa & Ucapan
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl text-[#1E100A] font-bold">
-            Ucapan & Doa
+            Ucapan & Doa Restu
           </h2>
           <JavaneseDivider className="w-48 h-8" />
         </motion.div>
@@ -61,7 +62,7 @@ export function WishesSection() {
           <div className="text-xs text-[#4A2B18] py-8">Memuat ucapan...</div>
         ) : wishes.length === 0 ? (
           <div className="text-xs text-[#4A2B18] py-8 italic glass-card-jawa p-6 rounded-2xl">
-            Dereng wonten atur donga. Sumangga dados ingkang kapisan maringi donga pangestu!
+            Belum ada ucapan. Jadilah yang pertama memberikan doa restu!
           </div>
         ) : (
           <div className="space-y-4 text-left">
@@ -83,7 +84,7 @@ export function WishesSection() {
                         {wish.guestName}
                       </h4>
                       <span className="text-[10px] text-[#8B6508] font-semibold">
-                        {wish.attendanceStatus === "attending" ? "InsyaAllah Rawuh" : "Nyuwun Pangapunten"}
+                        {wish.attendanceStatus === "attending" ? "InsyaAllah Hadir" : "Mohon Maaf Tidak Hadir"}
                       </span>
                     </div>
                   </div>

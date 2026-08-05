@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { GununganHeader, JavaneseDivider, MegamendungCloud } from "./JavaneseOrnaments";
+import { GununganHeader, JavaneseDivider, MegamendungCloud, JavaneseBottomCorners } from "./JavaneseOrnaments";
 
 interface GalleryItem {
   id: string;
@@ -28,7 +28,8 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
   };
 
   return (
-    <section className="py-20 px-6 bg-[#F7F2E7] text-center relative overflow-hidden">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center py-16 px-6 bg-[#F7F2E7] text-center snap-start overflow-hidden">
+      <JavaneseBottomCorners className="w-96 h-96 sm:w-[36rem] sm:h-[36rem]" />
       {/* Floating Megamendung Clouds */}
       <div className="absolute top-10 left-2 opacity-50">
         <MegamendungCloud className="w-24 h-16" />
@@ -37,7 +38,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
         <MegamendungCloud className="w-24 h-16" />
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-10 relative z-10">
+      <div className="max-w-3xl mx-auto space-y-10 relative z-20 my-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -47,10 +48,10 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
         >
           <GununganHeader className="w-16 h-24" />
           <p className="text-[11px] uppercase tracking-[0.35em] text-[#8B6508] font-semibold">
-            Tetenger Momen Bahagia
+            Momen Bahagia
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl text-[#1E100A] font-bold">
-            Our Gallery
+            Galeri Foto
           </h2>
           <JavaneseDivider className="w-48 h-8" />
         </motion.div>
@@ -69,14 +70,14 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
             >
               <Image
                 src={img.imageUrl}
-                alt={img.altText || `Gallery ${idx + 1}`}
+                alt={img.altText || `Galeri ${idx + 1}`}
                 fill
                 loading="lazy"
                 sizes="(max-width: 640px) 50vw, 33vw"
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-[#1E100A]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-[#F3E5AB] text-xs font-semibold">
-                Ningali Foto
+                Lihat Foto
               </div>
             </motion.div>
           ))}
