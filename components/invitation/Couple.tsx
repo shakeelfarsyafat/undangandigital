@@ -4,29 +4,19 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { GununganHeader, JavaneseDivider, JavaneseBottomCorners } from "./JavaneseOrnaments";
 
-function InstagramIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-    </svg>
-  );
-}
+
 
 interface Settings {
   groomName: string;
   groomFullName: string;
   groomFather: string;
   groomMother: string;
-  groomInstagram?: string | null;
   groomPhotoUrl?: string | null;
 
   brideName: string;
   brideFullName: string;
   brideFather: string;
   brideMother: string;
-  brideInstagram?: string | null;
   bridePhotoUrl?: string | null;
 }
 
@@ -84,18 +74,6 @@ export function Couple({ settings }: { settings: Settings }) {
             <p className="text-[10px] sm:text-xs text-[#5C3A21] leading-tight">
               Putra dari: <span className="font-semibold text-[#3E2211]">{settings.groomFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.groomMother}</span>
             </p>
-
-            {settings.groomInstagram && (
-              <a
-                href={`https://instagram.com/${settings.groomInstagram}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[10px] text-[#C5A059] font-bold hover:underline pt-0.5"
-              >
-                <InstagramIcon />
-                @{settings.groomInstagram}
-              </a>
-            )}
           </motion.div>
 
           {/* Bride Card */}
@@ -127,18 +105,6 @@ export function Couple({ settings }: { settings: Settings }) {
             <p className="text-[10px] sm:text-xs text-[#5C3A21] leading-tight">
               Putri dari: <span className="font-semibold text-[#3E2211]">{settings.brideFather}</span> & <span className="font-semibold text-[#3E2211]">{settings.brideMother}</span>
             </p>
-
-            {settings.brideInstagram && (
-              <a
-                href={`https://instagram.com/${settings.brideInstagram}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[10px] text-[#C5A059] font-bold hover:underline pt-0.5"
-              >
-                <InstagramIcon />
-                @{settings.brideInstagram}
-              </a>
-            )}
           </motion.div>
         </div>
       </div>

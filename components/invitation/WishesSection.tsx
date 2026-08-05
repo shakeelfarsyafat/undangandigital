@@ -65,14 +65,14 @@ export function WishesSection() {
             Belum ada ucapan. Jadilah yang pertama memberikan doa restu!
           </div>
         ) : (
-          <div className="space-y-4 text-left">
-            {wishes.slice(0, visibleCount).map((wish, idx) => (
+          <div className="space-y-3 text-left max-h-[50vh] overflow-y-auto pr-1 scrollbar-thin">
+            {wishes.map((wish, idx) => (
               <motion.div
                 key={wish.id || idx}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: idx * 0.05 }}
-                className="glass-card-jawa p-5 rounded-2xl border border-[#D4AF37]/30 shadow-md space-y-2"
+                className="glass-card-jawa p-4 sm:p-5 rounded-2xl border border-[#D4AF37]/30 shadow-md space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -98,15 +98,6 @@ export function WishesSection() {
                 </p>
               </motion.div>
             ))}
-
-            {visibleCount < wishes.length && (
-              <button
-                onClick={() => setVisibleCount((prev) => prev + 4)}
-                className="w-full py-2.5 px-4 bg-[#FDFBF7] border border-[#D4AF37] text-[#8B6508] text-xs font-semibold rounded-xl hover:bg-[#F7F2E7] transition-colors cursor-pointer"
-              >
-                Load More ({wishes.length - visibleCount} Ucapan Lagi)
-              </button>
-            )}
           </div>
         )}
       </div>

@@ -182,6 +182,7 @@ export default function GeneralInvitationPage() {
           groomName={defaultData.settings.groomName}
           brideName={defaultData.settings.brideName}
           weddingDate={defaultData.settings.weddingDate}
+          heroPhotoUrl={defaultData.settings.heroPhotoUrl}
         />
 
         <Ayat />
@@ -204,8 +205,6 @@ export default function GeneralInvitationPage() {
         />
 
         <RSVPForm guestId={defaultData.guest.id} guestName={defaultData.guest.name} />
-
-        <WishesSection />
 
         <Closing
           groomName={defaultData.settings.groomName}

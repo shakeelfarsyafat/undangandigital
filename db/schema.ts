@@ -1,13 +1,14 @@
 import { pgTable, text, timestamp, integer, boolean, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-// 1. Users Table (Admin authentication)
+// 1. Users Table (Admin authentication & tenant identification)
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  role: text("role").notNull().default("admin"),
+  role: text("role").notNull().default("admin_mempelai"), // "superadmin" | "admin_mempelai"
+  weddingSlug: text("wedding_slug").unique(), // Unique URL identifier e.g. "ahmad-nabila"
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -15,8 +16,9 @@ export const users = pgTable("users", {
 // 2. Guests Table
 export const guests = pgTable("guests", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
+  slug: text("slug").notNull(),
   phone: text("phone"),
   category: text("category").notNull().default("Lainnya"), // Keluarga, Teman, Kampus, Organisasi, Rekan Kerja, Lainnya
   invitationStatus: text("invitation_status").notNull().default("unopened"), // unopened, opened
@@ -39,6 +41,7 @@ export const rsvps = pgTable("rsvps", {
 // 4. Wedding Settings Table
 export const weddingSettings = pgTable("wedding_settings", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   
   // Groom Info
   groomName: text("groom_name").notNull(),
@@ -58,6 +61,7 @@ export const weddingSettings = pgTable("wedding_settings", {
 
   // Wedding General Info
   weddingDate: text("wedding_date").notNull(), // e.g. "2026-12-20"
+  heroPhotoUrl: text("hero_photo_url"),
   quoteText: text("quote_text"),
   
   // Gift & Physical Gift Destination Info
@@ -72,6 +76,7 @@ export const weddingSettings = pgTable("wedding_settings", {
 // 5. Events Table (Akad Nikah, Resepsi)
 export const events = pgTable("events", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull(), // akad, reception
   title: text("title").notNull(),
   date: text("date").notNull(), // e.g. "Minggu, 20 Desember 2026"
@@ -88,6 +93,7 @@ export const events = pgTable("events", {
 // 6. Bank Accounts Table
 export const bankAccounts = pgTable("bank_accounts", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   bankName: text("bank_name").notNull(), // e.g. BCA, Mandiri, QRIS
   accountNumber: text("account_number").notNull(),
   accountHolder: text("account_holder").notNull(),
@@ -100,6 +106,7 @@ export const bankAccounts = pgTable("bank_accounts", {
 // 7. Love Stories Table
 export const loveStories = pgTable("love_stories", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   year: text("year").notNull(), // e.g. "2021"
   title: text("title").notNull(),
   description: text("description").notNull(),
@@ -111,6 +118,7 @@ export const loveStories = pgTable("love_stories", {
 // 8. Gallery Table
 export const gallery = pgTable("gallery", {
   id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   imageUrl: text("image_url").notNull(),
   altText: text("alt_text"),
   displayOrder: integer("display_order").notNull().default(0),

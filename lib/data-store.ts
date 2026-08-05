@@ -2,7 +2,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
-// Initial fallback mock data
+// Initial fallback mock data (Clean empty states)
 let mockGuests: Array<{
   id: string;
   name: string;
@@ -13,81 +13,57 @@ let mockGuests: Array<{
   openedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-}> = [
-  {
-    id: "g-1",
-    name: "Faza Mohamad",
-    slug: "faza-mohamad",
-    phone: "081299990001",
-    category: "Teman",
-    invitationStatus: "unopened",
-    openedAt: null as Date | null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "g-2",
-    name: "Ahmad Fauzan",
-    slug: "ahmad-fauzan",
-    phone: "081299990002",
-    category: "Keluarga",
-    invitationStatus: "opened",
-    openedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "g-3",
-    name: "Siti Rahma",
-    slug: "siti-rahma",
-    phone: "081299990003",
-    category: "Rekan Kerja",
-    invitationStatus: "unopened",
-    openedAt: null as Date | null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+}> = [];
 
-let mockRsvps = [
-  {
-    id: "r-1",
-    guestId: "g-2",
-    attendanceStatus: "attending",
-    guestCount: 2,
-    message: "Selamat menempuh hidup baru Ahmad & Nabila! Semoga sakinah, mawaddah, wa rahmah.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+let mockRsvps: Array<{
+  id: string;
+  guestId: string;
+  attendanceStatus: string;
+  guestCount: number;
+  message: string;
+  createdAt: Date;
+  updatedAt: Date;
+}> = [];
 
 let mockSettings = {
   id: "s-1",
-  groomName: "Ahmad",
-  groomFullName: "Ahmad Fauzi, S.T.",
-  groomFather: "Bpk. H. Rahmat",
-  groomMother: "Ibu Hj. Siti",
-  groomInstagram: "ahmad.fauzi",
-  groomPhotoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80",
+  groomName: "Nama Groom",
+  groomFullName: "Nama Lengkap Mempelai Pria",
+  groomFather: "Nama Ayah",
+  groomMother: "Nama Ibu",
+  groomInstagram: "",
+  groomPhotoUrl: "",
 
-  brideName: "Nabila",
-  brideFullName: "Nabila Putri, S.Ked.",
-  brideFather: "Bpk. H. Hasan",
-  brideMother: "Ibu Hj. Aminah",
-  brideInstagram: "nabila.putri",
-  bridePhotoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+  brideName: "Nama Bride",
+  brideFullName: "Nama Lengkap Mempelai Wanita",
+  brideFather: "Nama Ayah",
+  brideMother: "Nama Ibu",
+  brideInstagram: "",
+  bridePhotoUrl: "",
 
   weddingDate: "2026-12-20",
+  heroPhotoUrl: "",
   quoteText: "Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)",
 
-  giftRecipient: "Ahmad Fauzi / Nabila Putri",
-  giftPhone: "081234567890",
-  giftAddress: "Jl. Mawar No. 12, Menteng, Jakarta Pusat, DKI Jakarta 10350",
+  giftRecipient: "Mempelai Pria & Wanita",
+  giftPhone: "",
+  giftAddress: "",
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
-let mockEvents = [
+let mockEvents: Array<{
+  id: string;
+  type: string;
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  venueName: string;
+  venueAddress: string;
+  mapsUrl: string;
+  displayOrder: number;
+}> = [
   {
     id: "e-1",
     type: "akad",
@@ -95,9 +71,9 @@ let mockEvents = [
     date: "Minggu, 20 Desember 2026",
     startTime: "08.00",
     endTime: "10.00 WIB",
-    venueName: "Masjid Agung Al-Azhar",
-    venueAddress: "Jl. Sisingamangaraja No. 1, Kebayoran Baru, Jakarta Selatan",
-    mapsUrl: "https://maps.google.com/?q=Masjid+Agung+Al-Azhar",
+    venueName: "Nama Tempat / Masjid",
+    venueAddress: "Alamat Lengkap Lokasi Akad Nikah",
+    mapsUrl: "",
     displayOrder: 1,
   },
   {
@@ -107,101 +83,36 @@ let mockEvents = [
     date: "Minggu, 20 Desember 2026",
     startTime: "11.00",
     endTime: "15.00 WIB",
-    venueName: "Ballroom Hotel Grand Mahakam",
-    venueAddress: "Jl. Mahakam No. 6, Kramat Pela, Kebayoran Baru, Jakarta Selatan",
-    mapsUrl: "https://maps.google.com/?q=Hotel+Grand+Mahakam",
+    venueName: "Nama Tempat / Gedung",
+    venueAddress: "Alamat Lengkap Lokasi Resepsi",
+    mapsUrl: "",
     displayOrder: 2,
   },
 ];
 
-let mockBanks = [
-  {
-    id: "b-1",
-    bankName: "BCA",
-    accountNumber: "1234567890",
-    accountHolder: "Ahmad Fauzi",
-    displayOrder: 1,
-    isActive: true,
-  },
-  {
-    id: "b-2",
-    bankName: "Mandiri",
-    accountNumber: "9876543210",
-    accountHolder: "Nabila Putri",
-    displayOrder: 2,
-    isActive: true,
-  },
-];
+let mockBanks: Array<{
+  id: string;
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  displayOrder: number;
+  isActive: boolean;
+}> = [];
 
-let mockStories = [
-  {
-    id: "ls-1",
-    year: "2021",
-    title: "Pertama Bertemu",
-    description: "Awal perkenalan di kampus saat aktif dalam kegiatan organisasi mahasiswa bersama.",
-    displayOrder: 1,
-  },
-  {
-    id: "ls-2",
-    year: "2023",
-    title: "Menjalin Hubungan",
-    description: "Memutuskan untuk berkomitmen saling mendukung impian dan cita-cita masing-masing.",
-    displayOrder: 2,
-  },
-  {
-    id: "ls-3",
-    year: "2026",
-    title: "Lamaran",
-    description: "Momen membahagiakan saat kedua keluarga besar bertemu dan mengikat janji suci.",
-    displayOrder: 3,
-  },
-  {
-    id: "ls-4",
-    year: "2026",
-    title: "Pernikahan",
-    description: "Mengucap janji suci pernikahan dan mengarungi bahtera rumah tangga bersama.",
-    displayOrder: 4,
-  },
-];
+let mockStories: Array<{
+  id: string;
+  year: string;
+  title: string;
+  description: string;
+  displayOrder: number;
+}> = [];
 
-let mockGallery = [
-  {
-    id: "g-img-1",
-    imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?w=1000&auto=format&fit=crop&q=80",
-    altText: "Foto Prewedding 1",
-    displayOrder: 1,
-  },
-  {
-    id: "g-img-2",
-    imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1000&auto=format&fit=crop&q=80",
-    altText: "Foto Prewedding 2",
-    displayOrder: 2,
-  },
-  {
-    id: "g-img-3",
-    imageUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1000&auto=format&fit=crop&q=80",
-    altText: "Foto Prewedding 3",
-    displayOrder: 3,
-  },
-  {
-    id: "g-img-4",
-    imageUrl: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1000&auto=format&fit=crop&q=80",
-    altText: "Foto Prewedding 4",
-    displayOrder: 4,
-  },
-  {
-    id: "g-img-5",
-    imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=1000&auto=format&fit=crop&q=80",
-    altText: "Foto Prewedding 5",
-    displayOrder: 5,
-  },
-  {
-    id: "g-img-6",
-    imageUrl: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=1000&auto=format&fit=crop&q=80",
-    altText: "Foto Prewedding 6",
-    displayOrder: 6,
-  },
-];
+let mockGallery: Array<{
+  id: string;
+  imageUrl: string;
+  altText: string;
+  displayOrder: number;
+}> = [];
 
 // Helper functions with automatic fallback
 export async function getGuestBySlug(slug: string) {
@@ -263,6 +174,61 @@ export async function createGuest(data: { name: string; slug: string; phone?: st
 
   mockGuests.unshift(newGuest);
   return newGuest;
+}
+
+export async function bulkCreateGuests(
+  guestsList: Array<{ name: string; phone?: string; category?: string }>
+) {
+  const createdList = [];
+  for (let i = 0; i < guestsList.length; i++) {
+    const item = guestsList[i];
+    if (!item.name || !item.name.trim()) continue;
+
+    // Generate unique slug
+    let baseSlug = item.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+    if (!baseSlug) baseSlug = `tamu-${Date.now()}-${i}`;
+    let slug = baseSlug;
+    let count = 1;
+    while (mockGuests.some((g) => g.slug === slug)) {
+      slug = `${baseSlug}-${count}`;
+      count++;
+    }
+
+    const guestObj = {
+      id: `g-${Date.now()}-${i}`,
+      name: item.name.trim(),
+      slug,
+      phone: item.phone ? item.phone.trim() : null,
+      category: item.category ? item.category.trim() : "Lainnya",
+      invitationStatus: "unopened",
+      openedAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    try {
+      const res = await db
+        .insert(schema.guests)
+        .values({
+          name: guestObj.name,
+          slug: guestObj.slug,
+          phone: guestObj.phone,
+          category: guestObj.category,
+        })
+        .returning();
+      if (res.length > 0) createdList.push(res[0]);
+      else createdList.push(guestObj);
+    } catch (e) {
+      createdList.push(guestObj);
+    }
+
+    mockGuests.unshift(guestObj);
+  }
+  return createdList;
 }
 
 export async function deleteGuest(id: string) {
@@ -369,6 +335,45 @@ export async function getWeddingSettings() {
   return mockSettings;
 }
 
+export async function updateWeddingSettings(data: {
+  groomName?: string;
+  groomFullName?: string;
+  groomFather?: string;
+  groomMother?: string;
+  brideName?: string;
+  brideFullName?: string;
+  brideFather?: string;
+  brideMother?: string;
+  weddingDate?: string;
+}) {
+  try {
+    const existing = await db.select().from(schema.weddingSettings).limit(1);
+    if (existing.length > 0) {
+      const res = await db
+        .update(schema.weddingSettings)
+        .set({
+          ...data,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.weddingSettings.id, existing[0].id))
+        .returning();
+      if (res.length > 0) {
+        mockSettings = { ...mockSettings, ...res[0] };
+        return res[0];
+      }
+    }
+  } catch (e) {
+    // fallback
+  }
+
+  mockSettings = {
+    ...mockSettings,
+    ...data,
+    updatedAt: new Date(),
+  };
+  return mockSettings;
+}
+
 export async function getEvents() {
   try {
     const res = await db.select().from(schema.events).orderBy(schema.events.displayOrder);
@@ -379,6 +384,53 @@ export async function getEvents() {
   return mockEvents;
 }
 
+export async function updateEvents(eventsList: Array<{
+  id: string;
+  type: string;
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  venueName: string;
+  venueAddress: string;
+  mapsUrl: string;
+}>) {
+  for (const item of eventsList) {
+    try {
+      const res = await db
+        .update(schema.events)
+        .set({
+          title: item.title,
+          date: item.date,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          venueName: item.venueName,
+          venueAddress: item.venueAddress,
+          mapsUrl: item.mapsUrl,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.events.id, item.id))
+        .returning();
+      if (res.length > 0) {
+        const idx = mockEvents.findIndex((e) => e.id === item.id);
+        if (idx !== -1) mockEvents[idx] = { ...mockEvents[idx], ...res[0] };
+      }
+    } catch (e) {
+      // fallback
+    }
+
+    const idx = mockEvents.findIndex((e) => e.id === item.id);
+    if (idx !== -1) {
+      mockEvents[idx] = {
+        ...mockEvents[idx],
+        ...item,
+      };
+    }
+  }
+
+  return mockEvents;
+}
+
 export async function getBankAccounts() {
   try {
     const res = await db.select().from(schema.bankAccounts).orderBy(schema.bankAccounts.displayOrder);
@@ -386,6 +438,60 @@ export async function getBankAccounts() {
   } catch (e) {
     // fallback
   }
+  return mockBanks;
+}
+
+export async function updateBankAccounts(banksList: Array<{
+  id?: string;
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}>) {
+  const updatedList = [];
+  for (let i = 0; i < banksList.length; i++) {
+    const item = banksList[i];
+    const bankId = item.id || `b-${Date.now()}-${i}`;
+    const bankObj = {
+      id: bankId,
+      bankName: item.bankName,
+      accountNumber: item.accountNumber,
+      accountHolder: item.accountHolder,
+      displayOrder: i + 1,
+      isActive: item.isActive ?? true,
+    };
+
+    try {
+      const existing = await db.select().from(schema.bankAccounts).where(eq(schema.bankAccounts.id, bankId)).limit(1);
+      if (existing.length > 0) {
+        const res = await db
+          .update(schema.bankAccounts)
+          .set({
+            bankName: item.bankName,
+            accountNumber: item.accountNumber,
+            accountHolder: item.accountHolder,
+            displayOrder: i + 1,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.bankAccounts.id, bankId))
+          .returning();
+        if (res.length > 0) updatedList.push(res[0]);
+        else updatedList.push(bankObj);
+      } else {
+        const res = await db
+          .insert(schema.bankAccounts)
+          .values(bankObj)
+          .returning();
+        if (res.length > 0) updatedList.push(res[0]);
+        else updatedList.push(bankObj);
+      }
+    } catch (e) {
+      updatedList.push(bankObj);
+    }
+  }
+
+  mockBanks = updatedList;
   return mockBanks;
 }
 
@@ -407,4 +513,104 @@ export async function getGallery() {
     // fallback
   }
   return mockGallery;
+}
+
+export async function updateGallery(galleryList: Array<{
+  id?: string;
+  imageUrl: string;
+  altText?: string;
+  displayOrder?: number;
+}>) {
+  const updatedList = [];
+  for (let i = 0; i < galleryList.length; i++) {
+    const item = galleryList[i];
+    const itemObj = {
+      id: item.id || `g-img-${Date.now()}-${i}`,
+      imageUrl: item.imageUrl,
+      altText: item.altText || `Foto Prewedding ${i + 1}`,
+      displayOrder: i + 1,
+    };
+
+    try {
+      const existing = await db.select().from(schema.gallery).where(eq(schema.gallery.id, itemObj.id)).limit(1);
+      if (existing.length > 0) {
+        const res = await db
+          .update(schema.gallery)
+          .set({
+            imageUrl: item.imageUrl,
+            altText: item.altText || `Foto Prewedding ${i + 1}`,
+            displayOrder: i + 1,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.gallery.id, itemObj.id))
+          .returning();
+        if (res.length > 0) updatedList.push(res[0]);
+        else updatedList.push(itemObj);
+      } else {
+        const res = await db
+          .insert(schema.gallery)
+          .values(itemObj)
+          .returning();
+        if (res.length > 0) updatedList.push(res[0]);
+        else updatedList.push(itemObj);
+      }
+    } catch (e) {
+      updatedList.push(itemObj);
+    }
+  }
+
+  mockGallery = updatedList;
+  return mockGallery;
+}
+
+export async function updateLoveStories(storiesList: Array<{
+  id?: string;
+  year: string;
+  title: string;
+  description: string;
+  displayOrder?: number;
+}>) {
+  const updatedList = [];
+  for (let i = 0; i < storiesList.length; i++) {
+    const item = storiesList[i];
+    const storyId = item.id || `ls-${Date.now()}-${i}`;
+    const storyObj = {
+      id: storyId,
+      year: item.year,
+      title: item.title,
+      description: item.description,
+      displayOrder: i + 1,
+    };
+
+    try {
+      const existing = await db.select().from(schema.loveStories).where(eq(schema.loveStories.id, storyId)).limit(1);
+      if (existing.length > 0) {
+        const res = await db
+          .update(schema.loveStories)
+          .set({
+            year: item.year,
+            title: item.title,
+            description: item.description,
+            displayOrder: i + 1,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.loveStories.id, storyId))
+          .returning();
+        if (res.length > 0) updatedList.push(res[0]);
+        else updatedList.push(storyObj);
+      } else {
+        const res = await db
+          .insert(schema.loveStories)
+          .values(storyObj)
+          .returning();
+        if (res.length > 0) updatedList.push(res[0]);
+        else updatedList.push(storyObj);
+      }
+    } catch (e) {
+      updatedList.push(storyObj);
+    }
+  }
+
+  mockStories = updatedList;
+  return mockStories;
 }

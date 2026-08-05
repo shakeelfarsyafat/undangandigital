@@ -13,16 +13,15 @@ import { SaveTheDate } from "@/components/invitation/SaveTheDate";
 import { LocationMap } from "@/components/invitation/LocationMap";
 import { WeddingGift } from "@/components/invitation/WeddingGift";
 import { RSVPForm } from "@/components/invitation/RSVPForm";
-import { WishesSection } from "@/components/invitation/WishesSection";
 import { Closing } from "@/components/invitation/Closing";
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ weddingSlug: string; guestSlug: string }>;
 }
 
-export default function InvitationPage({ params }: PageProps) {
-  const { slug } = use(params);
-  
+export default function MultiTenantInvitationPage({ params }: PageProps) {
+  const { weddingSlug, guestSlug } = use(params);
+
   const [isLoadingScreen, setIsLoadingScreen] = useState(true);
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [data, setData] = useState<{
@@ -41,6 +40,7 @@ export default function InvitationPage({ params }: PageProps) {
       brideInstagram?: string;
       bridePhotoUrl?: string;
       weddingDate: string;
+      heroPhotoUrl?: string;
       quoteText?: string;
       giftRecipient?: string;
       giftPhone?: string;
@@ -63,83 +63,83 @@ export default function InvitationPage({ params }: PageProps) {
       accountNumber: string;
       accountHolder: string;
     }>;
-    loveStories: Array<{
+    loveStories?: Array<{
       id: string;
       year: string;
       title: string;
       description: string;
     }>;
-    gallery: Array<{
-      id: string;
-      imageUrl: string;
-      altText?: string;
-    }>;
   } | null>(null);
-  const [isError, setIsError] = useState(false);
+
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
+    async function fetchInvitationData() {
       try {
-        const res = await fetch(`/api/invite/${slug}`);
-        if (res.status === 404) {
-          setIsError(true);
-          return;
-        }
+        const res = await fetch(`/api/invite?weddingSlug=${weddingSlug}&guestSlug=${guestSlug}`);
         if (!res.ok) {
-          setIsError(true);
+          setError(true);
           return;
         }
         const json = await res.json();
         setData(json);
+
+        // Mark guest as opened
+        if (json.guest?.id) {
+          fetch(`/api/invite/open`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ guestId: json.guest.id }),
+          }).catch(() => {});
+        }
       } catch {
-        setIsError(true);
+        setError(true);
       }
     }
-    loadData();
-  }, [slug]);
 
-  if (isError) {
+    fetchInvitationData();
+  }, [weddingSlug, guestSlug]);
+
+  if (error) {
     return notFound();
   }
 
-  // Prevent background scroll when cover is active
-  useEffect(() => {
-    if (!isCoverOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isCoverOpen]);
-
   if (!data) {
-    return <LoadingScreen />;
+    return (
+      <div className="h-[100dvh] flex items-center justify-center bg-[#FDFBF7] text-[#1E100A] font-serif text-sm">
+        Memuat undangan digital...
+      </div>
+    );
   }
 
+  const handleOpenInvitation = () => {
+    setIsCoverOpen(true);
+  };
+
   return (
-    <main className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-[#FAF8F5] relative max-w-md mx-auto shadow-2xl border-x border-[#C5A059]/10 overflow-hidden">
-      {/* Loading Screen */}
+    <main className="relative min-h-[100dvh] w-full max-w-md mx-auto bg-[#FDFBF7] shadow-2xl overflow-hidden font-sans">
       {isLoadingScreen && (
-        <LoadingScreen onFinish={() => setIsLoadingScreen(false)} />
+        <LoadingScreen onComplete={() => setIsLoadingScreen(false)} />
       )}
 
-      {/* Fullscreen Cover Modal */}
       {!isCoverOpen && (
         <Cover
           guestName={data.guest.name}
           groomName={data.settings.groomName}
           brideName={data.settings.brideName}
-          onOpen={() => setIsCoverOpen(true)}
+          weddingDate={data.settings.weddingDate}
+          heroPhotoUrl={data.settings.heroPhotoUrl}
+          onOpen={handleOpenInvitation}
         />
       )}
 
-      {/* Floating Music Player */}
-      <MusicPlayer isPlaying={isCoverOpen} />
+      <MusicPlayer autoPlay={isCoverOpen} />
 
-      {/* Main Invitation Sections with Snap Scrolling */}
-      <div className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${!isCoverOpen ? "opacity-30 blur-sm pointer-events-none" : "opacity-100"}`}>
+      <div
+        className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${
+          !isCoverOpen ? "opacity-30 blur-sm pointer-events-none" : "opacity-100"
+        }`}
+      >
         <Hero
           groomName={data.settings.groomName}
           brideName={data.settings.brideName}
@@ -162,9 +162,7 @@ export default function InvitationPage({ params }: PageProps) {
           mapsUrl={data.events[0]?.mapsUrl}
         />
 
-        <WeddingGift
-          banks={data.banks}
-        />
+        <WeddingGift banks={data.banks} />
 
         <RSVPForm guestId={data.guest.id} guestName={data.guest.name} />
 

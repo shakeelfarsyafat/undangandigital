@@ -8,9 +8,14 @@ interface HeroProps {
   groomName: string;
   brideName: string;
   weddingDate: string;
+  heroPhotoUrl?: string;
 }
 
-export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
+export function Hero({ groomName, brideName, weddingDate, heroPhotoUrl }: HeroProps) {
+  const displayHeroPhoto =
+    heroPhotoUrl ||
+    "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop&q=80";
+
   return (
     <section className="relative h-[100dvh] min-h-[100dvh] max-h-[100dvh] flex flex-col items-center justify-between text-center px-4 py-6 sm:py-8 bg-[#FAF5EB] overflow-hidden bg-gold-dots snap-start">
       {/* Floating Megamendung Clouds */}
@@ -47,8 +52,8 @@ export function Hero({ groomName, brideName, weddingDate }: HeroProps) {
           className="relative h-[28vh] max-h-[260px] aspect-[3/4] mx-auto rounded-t-full rounded-b-3xl overflow-hidden border-3 border-[#C5A059] shadow-xl"
         >
           <Image
-            src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop&q=80"
-            alt="Foto Pengantin"
+            src={displayHeroPhoto}
+            alt="Foto Pengantin Halaman Utama"
             fill
             priority
             className="object-cover object-center filter saturate-[0.95]"
