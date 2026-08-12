@@ -389,7 +389,7 @@ export async function upsertRsvp(data: {
   guestId: string;
   attendanceStatus: string;
   guestCount: number;
-  message?: string;
+  message?: string | null;
 }) {
   if (isUUID(data.guestId)) {
     try {

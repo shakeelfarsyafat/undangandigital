@@ -28,7 +28,12 @@ export async function POST(request: Request) {
       });
     }
 
-    const savedRsvp = await upsertRsvp(parsed.data);
+    const savedRsvp = await upsertRsvp({
+      guestId: parsed.data.guestId,
+      attendanceStatus: parsed.data.attendanceStatus,
+      guestCount: parsed.data.guestCount,
+      message: parsed.data.message || "",
+    });
     return NextResponse.json({ success: true, rsvp: savedRsvp });
   } catch (error) {
     return NextResponse.json({ error: "Gagal menyimpan RSVP" }, { status: 500 });
