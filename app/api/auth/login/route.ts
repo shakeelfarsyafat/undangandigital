@@ -3,7 +3,7 @@ import { loginSchema } from "@/lib/validations";
 import { createSession, verifyPassword, hashPassword } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, or, ilike } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -12,21 +12,32 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Format input tidak valid", details: parsed.error.format() },
+        { error: "Email/username dan password wajib diisi", details: parsed.error.format() },
         { status: 400 }
       );
     }
 
     const { email, password } = parsed.data;
-    const rawEmail = email.toLowerCase().trim();
-    // Allow entering just prefix (e.g. "novianti" -> "novianti@wedding.com")
-    const cleanEmail = rawEmail.includes("@") ? rawEmail : `${rawEmail}@wedding.com`;
+    const rawInput = email.toLowerCase().trim();
+    const cleanEmail = rawInput.includes("@") ? rawInput : `${rawInput}@wedding.com`;
 
     let user: { id: string; name: string; email: string; passwordHash: string; role: string; weddingSlug: string | null } | null = null;
 
-    // 1. Search in DB
+    // 1. Search in DB with multiple matching strategies
     try {
-      const res = await db.select().from(users).where(eq(users.email, cleanEmail)).limit(1);
+      const res = await db
+        .select()
+        .from(users)
+        .where(
+          or(
+            eq(users.email, cleanEmail),
+            eq(users.email, rawInput),
+            eq(users.weddingSlug, rawInput),
+            ilike(users.name, rawInput)
+          )
+        )
+        .limit(1);
+
       if (res.length > 0) {
         user = res[0];
       }
@@ -34,20 +45,29 @@ export async function POST(request: Request) {
       console.error("[Login] DB Select error:", err);
     }
 
-    const isSuperAdminEmail = cleanEmail === "superadmin@wedding.com" || cleanEmail === "admin@wedding.com";
+    const isSuperAdminIdentifier =
+      rawInput === "superadmin" ||
+      rawInput === "admin" ||
+      cleanEmail === "superadmin@wedding.com" ||
+      cleanEmail === "admin@wedding.com";
+
     const isSuperAdminPasswordMatch =
-      password === "superadmin123" || password === "superadmin" || password === "admin123" || password === "admin";
+      password === "superadmin123" ||
+      password === "superadmin" ||
+      password === "admin123" ||
+      password === "admin";
 
     // 2. If superadmin does not exist in DB yet, auto-create in PostgreSQL
-    if (!user && isSuperAdminEmail && isSuperAdminPasswordMatch) {
-      const emailName = cleanEmail === "admin@wedding.com" ? "Admin Platform" : "Super Admin Platform";
+    if (!user && isSuperAdminIdentifier && isSuperAdminPasswordMatch) {
+      const emailName = rawInput.includes("super") ? "Super Admin Platform" : "Admin Wedding";
+      const superEmail = rawInput.includes("super") ? "superadmin@wedding.com" : "admin@wedding.com";
       const superHash = await hashPassword(password);
       try {
         const inserted = await db
           .insert(users)
           .values({
             name: emailName,
-            email: cleanEmail,
+            email: superEmail,
             passwordHash: superHash,
             role: "superadmin",
           })
@@ -61,14 +81,14 @@ export async function POST(request: Request) {
     }
 
     if (!user) {
-      return NextResponse.json({ error: "Email atau password salah" }, { status: 401 });
+      return NextResponse.json({ error: "Email/username atau password salah" }, { status: 401 });
     }
 
     // 3. Verify password
     let isValidPassword = await verifyPassword(password, user.passwordHash);
 
-    // Master fallback if superadmin email matches
-    if (!isValidPassword && isSuperAdminEmail && isSuperAdminPasswordMatch) {
+    // Master fallback for superadmin role or identifier
+    if (!isValidPassword && (user.role === "superadmin" || isSuperAdminIdentifier) && isSuperAdminPasswordMatch) {
       isValidPassword = true;
       try {
         const newHash = await hashPassword(password);
@@ -78,11 +98,15 @@ export async function POST(request: Request) {
       }
     }
 
-    // Auto fallback for mempelai accounts (nama_awal + "123")
+    // Auto fallback for mempelai accounts (nama_awal + "123" or "mempelai123" or "admin123")
     if (!isValidPassword && (user.role === "admin_mempelai" || user.role === "admin")) {
       const firstWord = user.name.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g, "");
       const expectedAutoPassword = (firstWord || "mempelai") + "123";
-      if (password.toLowerCase().trim() === expectedAutoPassword || password === "mempelai123") {
+      if (
+        password.toLowerCase().trim() === expectedAutoPassword ||
+        password === "mempelai123" ||
+        password === "admin123"
+      ) {
         isValidPassword = true;
         try {
           const newHash = await hashPassword(password);
@@ -94,7 +118,7 @@ export async function POST(request: Request) {
     }
 
     if (!isValidPassword) {
-      return NextResponse.json({ error: "Email atau password salah" }, { status: 401 });
+      return NextResponse.json({ error: "Email/username atau password salah" }, { status: 401 });
     }
 
     const token = await createSession({

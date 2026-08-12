@@ -110,10 +110,35 @@ function AdminGuestsContent() {
     }
   }, []);
 
+  // Couple Info State
+  const [coupleInfo, setCoupleInfo] = useState<{ groomName: string; brideName: string }>({
+    groomName: "Mempelai",
+    brideName: "Pasangan",
+  });
+
+  // Fetch Settings (Couple Names)
+  const fetchCoupleSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/settings");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.settings) {
+          setCoupleInfo({
+            groomName: json.settings.groomName || "Mempelai",
+            brideName: json.settings.brideName || "Pasangan",
+          });
+        }
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
+
   useEffect(() => {
     fetchGuests();
     fetchRsvps();
-  }, [fetchGuests, fetchRsvps]);
+    fetchCoupleSettings();
+  }, [fetchGuests, fetchRsvps, fetchCoupleSettings]);
 
   // Guest Handlers
   const handleAddGuest = async (e: React.FormEvent) => {
@@ -182,8 +207,8 @@ function AdminGuestsContent() {
     const waUrl = createWhatsAppShareUrl({
       phone: guest.phone,
       guestName: guest.name,
-      groomName: "Mempelai",
-      brideName: "Pasangan",
+      groomName: coupleInfo.groomName || "Mempelai",
+      brideName: coupleInfo.brideName || "Pasangan",
       invitationUrl: inviteUrl,
     });
     window.open(waUrl, "_blank");
