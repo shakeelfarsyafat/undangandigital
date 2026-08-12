@@ -172,7 +172,23 @@ export default function AdminSettingsPage() {
       });
 
       if (res.ok) {
+        const json = await res.json();
         toast.success("Pengaturan, foto, & galeri berhasil diperbarui!");
+        if (json.events && Array.isArray(json.events)) {
+          const akad = json.events.find((e: { type: string }) => e.type === "akad");
+          if (akad) setAkadEvent((prev) => ({ ...prev, ...akad }));
+          const reception = json.events.find((e: { type: string }) => e.type === "reception");
+          if (reception) setReceptionEvent((prev) => ({ ...prev, ...reception }));
+        }
+        if (json.banks && Array.isArray(json.banks) && json.banks.length > 0) {
+          setBanks(json.banks);
+        }
+        if (json.gallery && Array.isArray(json.gallery) && json.gallery.length > 0) {
+          setGalleryItems(json.gallery);
+        }
+        if (json.loveStories && Array.isArray(json.loveStories) && json.loveStories.length > 0) {
+          setLoveStories(json.loveStories);
+        }
       } else {
         toast.error("Gagal menyimpan pengaturan");
       }

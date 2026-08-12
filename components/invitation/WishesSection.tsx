@@ -14,14 +14,24 @@ interface Wish {
   createdAt: string | Date;
 }
 
-export function WishesSection() {
+interface WishesSectionProps {
+  guestId?: string;
+  weddingSlug?: string;
+  reloadKey?: number;
+}
+
+export function WishesSection({ guestId, weddingSlug, reloadKey }: WishesSectionProps) {
   const [wishes, setWishes] = useState<Wish[]>([]);
-  const [visibleCount, setVisibleCount] = useState<number>(4);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchWishes = useCallback(async () => {
     try {
-      const res = await fetch("/api/wishes");
+      const params = new URLSearchParams();
+      if (guestId) params.set("guestId", guestId);
+      if (weddingSlug) params.set("weddingSlug", weddingSlug);
+
+      const url = `/api/wishes${params.toString() ? `?${params.toString()}` : ""}`;
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setWishes(data.wishes || []);
@@ -31,22 +41,22 @@ export function WishesSection() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [guestId, weddingSlug]);
 
   useEffect(() => {
     fetchWishes();
-  }, [fetchWishes]);
+  }, [fetchWishes, reloadKey]);
 
   return (
     <section className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] flex flex-col items-center justify-center py-6 px-4 bg-[#FDFBF7] text-center bg-batik-pattern snap-start overflow-hidden relative">
       <JavaneseBottomCorners className="w-64 h-64 sm:w-96 sm:h-96" />
-      <div className="max-w-md mx-auto space-y-8 relative z-20 my-auto w-full">
+      <div className="max-w-md mx-auto space-y-6 relative z-20 my-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="space-y-3"
+          className="space-y-2"
         >
           <GununganHeader className="w-16 h-24" />
           <p className="text-[11px] uppercase tracking-[0.35em] text-[#8B6508] font-semibold">

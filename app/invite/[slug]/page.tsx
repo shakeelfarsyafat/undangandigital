@@ -11,6 +11,7 @@ import { Hero } from "@/components/invitation/Hero";
 import { Ayat } from "@/components/invitation/Ayat";
 import { Couple } from "@/components/invitation/Couple";
 import { LoveStory } from "@/components/invitation/LoveStory";
+import { Gallery } from "@/components/invitation/Gallery";
 import { SaveTheDate } from "@/components/invitation/SaveTheDate";
 import { LocationMap } from "@/components/invitation/LocationMap";
 import { WeddingGift } from "@/components/invitation/WeddingGift";
@@ -24,9 +25,10 @@ interface PageProps {
 
 export default function InvitationPage({ params }: PageProps) {
   const { slug } = use(params);
-  
+
   const [isLoadingScreen, setIsLoadingScreen] = useState(true);
   const [isCoverOpen, setIsCoverOpen] = useState(false);
+  const [reloadWishes, setReloadWishes] = useState(0);
   const [data, setData] = useState<{
     guest: { id: string; name: string; slug: string; category: string };
     settings: {
@@ -143,44 +145,58 @@ export default function InvitationPage({ params }: PageProps) {
             />
           )}
 
-      {/* Floating Music Player */}
-      <MusicPlayer isPlaying={isCoverOpen} musicUrl={data.settings.musicUrl} />
+          {/* Floating Music Player */}
+          <MusicPlayer isPlaying={isCoverOpen} musicUrl={data.settings.musicUrl} />
 
-      {/* Main Invitation Sections with Snap Scrolling */}
-      <div className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${!isCoverOpen ? "opacity-30 blur-sm pointer-events-none" : "opacity-100"}`}>
-        <Hero
-          groomName={data.settings.groomName}
-          brideName={data.settings.brideName}
-          weddingDate={data.settings.weddingDate}
-          heroPhotoUrl={data.settings.heroPhotoUrl}
-        />
+          {/* Main Invitation Sections with Snap Scrolling */}
+          <div
+            className={`h-full w-full overflow-y-auto scroll-smooth snap-y snap-mandatory ${
+              !isCoverOpen ? "opacity-30 blur-sm pointer-events-none" : "opacity-100"
+            }`}
+          >
+            <Hero
+              groomName={data.settings.groomName}
+              brideName={data.settings.brideName}
+              weddingDate={data.settings.weddingDate}
+              heroPhotoUrl={data.settings.heroPhotoUrl}
+            />
 
-        <Ayat />
+            <Ayat />
 
-        <Couple settings={data.settings} />
+            <Couple settings={data.settings} />
 
-        <LoveStory stories={data.loveStories} />
+            <LoveStory stories={data.loveStories || []} />
 
-        <SaveTheDate events={data.events} />
+            {data.gallery && data.gallery.length > 0 && <Gallery items={data.gallery} />}
 
-        <LocationMap
-          targetDate={`${data.settings.weddingDate}T08:00:00`}
-          venueName={data.events[0]?.venueName}
-          venueAddress={data.events[0]?.venueAddress}
-          mapsUrl={data.events[0]?.mapsUrl}
-        />
+            <SaveTheDate events={data.events || []} />
 
-        <WeddingGift
-          banks={data.banks}
-        />
+            <LocationMap
+              targetDate={`${data.settings.weddingDate}T08:00:00`}
+              venueName={data.events?.[0]?.venueName}
+              venueAddress={data.events?.[0]?.venueAddress}
+              mapsUrl={data.events?.[0]?.mapsUrl}
+            />
 
-        <RSVPForm guestId={data.guest.id} guestName={data.guest.name} />
+            <WeddingGift banks={data.banks || []} />
 
-        <Closing
-          groomName={data.settings.groomName}
-          brideName={data.settings.brideName}
-        />
-      </div>
+            <RSVPForm
+              guestId={data.guest.id}
+              guestName={data.guest.name}
+              onSubmitted={() => setReloadWishes((prev) => prev + 1)}
+            />
+
+            <WishesSection
+              guestId={data.guest.id}
+              weddingSlug={slug}
+              reloadKey={reloadWishes}
+            />
+
+            <Closing
+              groomName={data.settings.groomName}
+              brideName={data.settings.brideName}
+            />
+          </div>
         </>
       )}
     </main>

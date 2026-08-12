@@ -3,9 +3,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { removeMockUser } from "../route";
-
-const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { isUUID } from "@/lib/data-store";
 
 export async function DELETE(
   request: Request,
@@ -13,14 +11,9 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    removeMockUser(id);
 
-    if (uuidRegex.test(id)) {
-      try {
-        await db.delete(schema.users).where(eq(schema.users.id, id));
-      } catch (dbErr) {
-        console.warn("[DELETE /api/admin/users] DB delete error:", dbErr);
-      }
+    if (isUUID(id)) {
+      await db.delete(schema.users).where(eq(schema.users.id, id));
     }
 
     return NextResponse.json({ success: true, message: "Akun berhasil dihapus" });
@@ -46,12 +39,8 @@ export async function PATCH(
       updates.passwordHash = await bcrypt.hash(newPassword, 10);
     }
 
-    if (uuidRegex.test(id)) {
-      try {
-        await db.update(schema.users).set(updates).where(eq(schema.users.id, id));
-      } catch (dbErr) {
-        console.warn("[PATCH /api/admin/users] DB update error:", dbErr);
-      }
+    if (isUUID(id)) {
+      await db.update(schema.users).set(updates).where(eq(schema.users.id, id));
     }
 
     return NextResponse.json({ success: true, message: "Akun berhasil diperbarui" });

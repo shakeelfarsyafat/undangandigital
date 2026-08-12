@@ -11,10 +11,12 @@ import { Hero } from "@/components/invitation/Hero";
 import { Ayat } from "@/components/invitation/Ayat";
 import { Couple } from "@/components/invitation/Couple";
 import { LoveStory } from "@/components/invitation/LoveStory";
+import { Gallery } from "@/components/invitation/Gallery";
 import { SaveTheDate } from "@/components/invitation/SaveTheDate";
 import { LocationMap } from "@/components/invitation/LocationMap";
 import { WeddingGift } from "@/components/invitation/WeddingGift";
 import { RSVPForm } from "@/components/invitation/RSVPForm";
+import { WishesSection } from "@/components/invitation/WishesSection";
 import { Closing } from "@/components/invitation/Closing";
 
 interface PageProps {
@@ -26,6 +28,7 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
 
   const [isLoadingScreen, setIsLoadingScreen] = useState(true);
   const [isCoverOpen, setIsCoverOpen] = useState(false);
+  const [reloadWishes, setReloadWishes] = useState(0);
   const [data, setData] = useState<{
     guest: { id: string; name: string; slug: string; category: string };
     settings: {
@@ -72,6 +75,11 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
       title: string;
       description: string;
     }>;
+    gallery?: Array<{
+      id: string;
+      imageUrl: string;
+      altText?: string;
+    }>;
   } | null>(null);
 
   const [error, setError] = useState(false);
@@ -88,7 +96,7 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
         setData(json);
 
         // Mark guest as opened
-        if (json.guest?.id) {
+        if (json.guest?.id && !json.guest.id.startsWith("g-guest") && !json.guest.id.startsWith("general-")) {
           fetch(`/api/invite/open`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -158,18 +166,30 @@ export default function MultiTenantInvitationPage({ params }: PageProps) {
 
         <LoveStory stories={data.loveStories || []} />
 
-        <SaveTheDate events={data.events} />
+        {data.gallery && data.gallery.length > 0 && <Gallery items={data.gallery} />}
+
+        <SaveTheDate events={data.events || []} />
 
         <LocationMap
           targetDate={`${data.settings.weddingDate}T08:00:00`}
-          venueName={data.events[0]?.venueName}
-          venueAddress={data.events[0]?.venueAddress}
-          mapsUrl={data.events[0]?.mapsUrl}
+          venueName={data.events?.[0]?.venueName}
+          venueAddress={data.events?.[0]?.venueAddress}
+          mapsUrl={data.events?.[0]?.mapsUrl}
         />
 
-        <WeddingGift banks={data.banks} />
+        <WeddingGift banks={data.banks || []} />
 
-        <RSVPForm guestId={data.guest.id} guestName={data.guest.name} />
+        <RSVPForm
+          guestId={data.guest.id}
+          guestName={data.guest.name}
+          onSubmitted={() => setReloadWishes((prev) => prev + 1)}
+        />
+
+        <WishesSection
+          guestId={data.guest.id}
+          weddingSlug={weddingSlug}
+          reloadKey={reloadWishes}
+        />
 
         <Closing
           groomName={data.settings.groomName}

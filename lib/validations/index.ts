@@ -12,7 +12,7 @@ export const guestSchema = z.object({
 });
 
 export const rsvpSchema = z.object({
-  guestId: z.string().uuid("ID tamu tidak valid"),
+  guestId: z.string().min(1, "ID tamu wajib diisi"),
   attendanceStatus: z.enum(["attending", "declined"], {
     message: "Pilih status kehadiran",
   }),

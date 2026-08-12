@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getWeddingSettings, getEvents, getBankAccounts, getLoveStories } from "@/lib/data-store";
+import {
+  getWeddingSettings,
+  getEvents,
+  getBankAccounts,
+  getLoveStories,
+  getGallery,
+} from "@/lib/data-store";
 
 export async function GET(request: Request) {
   try {
@@ -14,7 +20,11 @@ export async function GET(request: Request) {
     let guestData: { id: string; name: string; slug: string; category: string } | null = null;
 
     if (weddingSlug) {
-      const userRes = await db.select().from(schema.users).where(eq(schema.users.weddingSlug, weddingSlug)).limit(1);
+      const userRes = await db
+        .select()
+        .from(schema.users)
+        .where(eq(schema.users.weddingSlug, weddingSlug))
+        .limit(1);
       if (userRes.length > 0) {
         userId = userRes[0].id;
       }
@@ -46,11 +56,12 @@ export async function GET(request: Request) {
       };
     }
 
-    const [settings, events, banks, loveStories] = await Promise.all([
+    const [settings, events, banks, loveStories, gallery] = await Promise.all([
       getWeddingSettings(userId),
       getEvents(userId),
       getBankAccounts(userId),
       getLoveStories(userId),
+      getGallery(userId),
     ]);
 
     return NextResponse.json({
@@ -59,8 +70,10 @@ export async function GET(request: Request) {
       events,
       banks,
       loveStories,
+      gallery,
     });
   } catch (error) {
+    console.error("[GET /api/invite] Error:", error);
     return NextResponse.json({ error: "Gagal memuat data undangan" }, { status: 500 });
   }
 }
